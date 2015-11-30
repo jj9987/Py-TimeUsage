@@ -48,7 +48,7 @@ def käivita_stopper():
     global stopperi_sekundid, stopperi_käivitamise_nupp, stopperi_peatamise_nupp
     stopperi_käivitamise_nupp.destroy()
     stopperi_peatamise_nupp = Button(raam, text="Peata stopper", command=peata_stopper, width=12, bg=nupu_värv, font=headeri_font)
-    stopperi_peatamise_nupp.grid(column=4, row=0, ipadx=ekraani_laius*0.11*0.7-80, pady=5, padx=5, sticky=(W))
+    stopperi_peatamise_nupp.grid(column=4, row=0, ipadx=ekraani_laius*0.1*0.7-70, pady=5, padx=10, sticky=(W))
     stopperi_sekundid-=1
     stopperi_tiksumine()
 
@@ -59,7 +59,7 @@ def peata_stopper():
     except:
         pass
     stopperi_käivitamise_nupp = Button(raam, text="Käivita stopper", command=käivita_stopper, width=12, bg=nupu_värv, font=headeri_font)
-    stopperi_käivitamise_nupp.grid(column=4, row=0, ipadx=ekraani_laius*0.11*0.7-80, pady=5, padx=5, sticky=(W))
+    stopperi_käivitamise_nupp.grid(column=4, row=0, ipadx=ekraani_laius*0.1*0.7-70, pady=5, padx=10, sticky=(W))
     raam.after_cancel(tiksumise_id)
 
 def nulli_stopper():
@@ -147,23 +147,23 @@ raam.geometry('%dx%d+%d+%d' % (ekraani_laius, ekraani_kõrgus, 0.15*ekraani_laiu
 headeri_font= font.Font(size=10, weight='bold')
 
 
-#Teen kõige ülemise gridi rea:
+#Teen kõige ülemise headeri rea:
 töötavate_programmide_header = ttk.Label(raam, text="Töötavate programmide nimekiri",font=headeri_font, background=tausta_värv, foreground=headeri_teksti_värv)
 programmide_aktiivsuse_header = ttk.Label(raam, text="Programmi aktiivsus", font=headeri_font, background=tausta_värv, foreground=headeri_teksti_värv)
 aja_header = ttk.Label(raam, text="Kulunud aeg", font=headeri_font, background=tausta_värv, foreground=headeri_teksti_värv)
 töötavate_programmide_header.grid(column=0, row=0, ipadx=ekraani_laius*0.25*0.7-180, pady=20, sticky=(W), padx=20)
-programmide_aktiivsuse_header.grid(column=1, row=0, ipadx=ekraani_laius*0.18*0.7-115, pady=20, sticky=(W))
+programmide_aktiivsuse_header.grid(column=1, row=0, ipadx=ekraani_laius*0.17*0.7-115, pady=20, sticky=(W))
 aja_header.grid(column=2, row=0, ipadx=ekraani_laius*0.16*0.7-66, pady=20, sticky=(W))
 kõikide_aegade_nullimise_nupp = Button(raam, text="Nulli ajad", command=nulli_kõik, width=6, font=headeri_font, bg=nupu_värv)
-kõikide_aegade_nullimise_nupp.grid(column=3, row=0, ipadx=ekraani_laius*0.1*0.7-70, pady=20, sticky=(W))
+kõikide_aegade_nullimise_nupp.grid(column=3, row=0, ipadx=ekraani_laius*0.1*0.7-70, pady=20, padx=10, sticky=(W))
 
 #teen stopperi:
 stopper=ttk.Label(raam, text="Stopper:", font=headeri_font, background=tausta_värv)
 stopper.grid(column=4, row=1, ipadx=ekraani_laius*0.01, pady=5, padx=10, sticky=(W))
 stopperi_käivitamise_nupp = Button(raam, text="Käivita stopper", command=käivita_stopper, width=12, bg=nupu_värv, font=headeri_font)
-stopperi_käivitamise_nupp.grid(column=4, row=0, ipadx=ekraani_laius*0.11*0.7-80, pady=5, padx=10, sticky=(W))
+stopperi_käivitamise_nupp.grid(column=4, row=0, ipadx=ekraani_laius*0.1*0.7-70, pady=5, padx=10, sticky=(W))
 stopperi_nullimise_nupp= Button(raam, text="Nulli stopper", command=nulli_stopper, width=12, bg=nupu_värv, font=headeri_font)
-stopperi_nullimise_nupp.grid(column=5, row=0, pady=5, sticky=(W))
+stopperi_nullimise_nupp.grid(column=5, row=0, pady=5, padx=10, sticky=(W))
 
 #teen taimeri
 taimeri_käivitamise_nupp=Button(raam, text="Käivita taimer", command=käivita_taimer, width=12, bg=nupu_värv, font=headeri_font)
