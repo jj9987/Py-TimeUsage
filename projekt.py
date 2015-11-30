@@ -1,9 +1,11 @@
 try: #Python 3
     from tkinter import *
     from tkinter import ttk, font
+    from tkinter import messagebox
 except ImportError: #Python 2
     from Tkinter import *
     from Tkinter import ttk, font
+    from Tkinter import messagebox
 import ctypes
 from time import sleep
 
