@@ -10,14 +10,13 @@ import ctypes
 
 import backend # janar's work imported
 
-#hetkel on sisestatud vahemaadeks kindlat arvud, kuid tuleb muuta need ka sültuvaks ekraani suurusest
 
-def akna_suuruse_saamine():
-    global ekraani_laius, ekraani_kõrgus
-    user32 = ctypes.windll.user32
-    ekraani_laius= round(0.7*user32.GetSystemMetrics(0))
-    ekraani_kõrgus= round(0.7*user32.GetSystemMetrics(1))
-            
+töötavad_taimerid=[]
+
+user32 = ctypes.windll.user32
+ekraani_laius= round(0.7*user32.GetSystemMetrics(0))
+ekraani_kõrgus= round(0.7*user32.GetSystemMetrics(1))
+
 def nulli_kõik():   #vajab täielikku tegemist
     a=1 #lihtsalt, et siin miadgi oleks hetkel :D
 
@@ -72,7 +71,6 @@ def nulli_stopper():
 
 def käivita_taimer():
     global lisaaken, tundide_sisestus_taimerisse, minutite_sisestus_taimerisse, sekundite_sisestus_taimerisse, teadaanne
-    akna_suuruse_saamine()
     lisaaken=Tk()
     lisaaken.bind_all("<Return>", lisa_taimer)
     lisaaken.title("Taimeri loomine")
@@ -100,7 +98,7 @@ def käivita_taimer():
 
 def lisa_taimer(event=0):
     global lisaaken, tundide_sisestus_taimerisse, minutite_sisestus_taimerisse, sekundite_sisestus_taimerisse, teadaanne
-    global taimeri_sõnum, aega_kuvamiseni
+    global töötavad_taimerid
     try:          #kui midagi ei sisestata, siis pannakse sinna lünka 0
         tund=int(tundide_sisestus_taimerisse.get())
     except:
@@ -113,21 +111,42 @@ def lisa_taimer(event=0):
         sekund=int(sekundite_sisestus_taimerisse.get())
     except:
         sekund=0
-    taimeri_sõnum=teadaanne.get()
-    aega_kuvamiseni=tund*3600+minut*60+sekund
-    lisaaken.destroy()
-    jälgi_taimerit()
+    if minut==0 and tund==0 and sekund==0:
+        messagebox.showerror(message="Sisestaga kuhugi mõni numbertäisarv!", title="Error")
+    elif type(sekund)==int and type(minut)==int and type(tund)==int:
+        taimeri_sõnum=teadaanne.get()
+        töötavad_taimerid.append(taimeri_sõnum)
+        taimeri_listboxi_lisamine(töötavad_taimerid)
+        aega_kuvamiseni=tund*3600+minut*60+sekund
+        lisaaken.destroy()
+        jälgi_taimerit(aega_kuvamiseni, taimeri_sõnum)
+    else:
+        messagebox.showerror(message="Sisestage ajaks täisarve!", title="Error")
 
-def jälgi_taimerit():
-    global taimeri_sõnum, aega_kuvamiseni
-    aega_kuvamiseni -=1
-    if aega_kuvamiseni==0:
+def jälgi_taimerit(aeg,sõnum):
+    global töötavad_taimerid
+    aeg -=1
+    if aeg==0:
         raam.attributes("-topmost", True)
-        messagebox.showinfo(message=taimeri_sõnum)
+        messagebox.showinfo(message=sõnum, title="Meeldetuletus")
         raam.attributes("-topmost", False)
-        
-    raam.after(1000,jälgi_taimerit)
+        töötavad_taimerid.remove(sõnum)
+        taimeri_listboxi_lisamine(töötavad_taimerid)
+    elif sõnum in töötavad_taimerid:
+        raam.after(1000,jälgi_taimerit,aeg,sõnum)
+    else:
+        pass
 
+def eemalda_taimer():  
+    global töötavad_taimerid
+    sõnum = taimeri_listbox.get(ANCHOR)
+    töötavad_taimerid.remove(sõnum)
+    taimeri_listbox.delete(ANCHOR)
+
+def taimeri_listboxi_lisamine(list):
+    taimeri_listbox.delete(0,END)
+    for element in list:
+        taimeri_listbox.insert(END, element)
     
     
 
@@ -137,7 +156,7 @@ tausta_värv= '#%02x%02x%02x' % (242, 242, 242)
 nupu_värv= '#%02x%02x%02x' % (192, 204, 208)
 headeri_teksti_värv='blue'
 
-akna_suuruse_saamine()
+
 raam=Tk()
 raam.configure(bg = tausta_värv)
 raam.title("Projekt")
@@ -155,7 +174,7 @@ töötavate_programmide_header.grid(column=0, row=0, ipadx=ekraani_laius*0.25*0.
 programmide_aktiivsuse_header.grid(column=1, row=0, ipadx=ekraani_laius*0.17*0.7-115, pady=20, sticky=(W))
 aja_header.grid(column=2, row=0, ipadx=ekraani_laius*0.16*0.7-66, pady=20, sticky=(W))
 kõikide_aegade_nullimise_nupp = Button(raam, text="Nulli ajad", command=nulli_kõik, width=6, font=headeri_font, bg=nupu_värv)
-kõikide_aegade_nullimise_nupp.grid(column=3, row=0, ipadx=ekraani_laius*0.1*0.7-70, pady=20, padx=10, sticky=(W))
+kõikide_aegade_nullimise_nupp.grid(column=3, row=0, ipadx=ekraani_laius*0.1*0.7-70, padx=10, pady=20, sticky=(W))
 
 #teen stopperi:
 stopper=ttk.Label(raam, text="Stopper:", font=headeri_font, background=tausta_värv)
@@ -163,11 +182,21 @@ stopper.grid(column=4, row=1, ipadx=ekraani_laius*0.01, pady=5, padx=10, sticky=
 stopperi_käivitamise_nupp = Button(raam, text="Käivita stopper", command=käivita_stopper, width=12, bg=nupu_värv, font=headeri_font)
 stopperi_käivitamise_nupp.grid(column=4, row=0, ipadx=ekraani_laius*0.1*0.7-70, pady=5, padx=10, sticky=(W))
 stopperi_nullimise_nupp= Button(raam, text="Nulli stopper", command=nulli_stopper, width=12, bg=nupu_värv, font=headeri_font)
-stopperi_nullimise_nupp.grid(column=5, row=0, pady=5, padx=10, sticky=(W))
+stopperi_nullimise_nupp.grid(column=5, row=0, pady=5, sticky=(W), padx=10)
 
 #teen taimeri
-taimeri_käivitamise_nupp=Button(raam, text="Käivita taimer", command=käivita_taimer, width=12, bg=nupu_värv, font=headeri_font)
-taimeri_käivitamise_nupp.grid(column=4, row=3, pady=5, padx=10, sticky=(W), rowspan=2)
+taimeri_lisamise_nupp=Button(raam, text="Lisa taimer", command=käivita_taimer, width=12, bg=nupu_värv, font=headeri_font)
+taimeri_lisamise_nupp.grid(column=4, row=3, pady=5, padx=10, sticky=(W))
+taimeri_eemaldamise_nupp=Button(raam, text="Eemalda taimer", command=eemalda_taimer, width=13, bg=nupu_värv, font=headeri_font)
+taimeri_eemaldamise_nupp.grid(column=5, row=3, pady=5, padx=10, sticky=(W))
+taimeri_tekst=ttk.Label(raam, text="Hetkel töös olevad taimerid:")
+taimeri_tekst.grid(row=5, column=4, columnspan=2, padx=10, sticky=(W))
+scrollbar=Scrollbar(raam)
+scrollbar.grid(row=6, column=4, columnspan=2, padx=10, sticky=(E,N,S))
+taimeri_listbox=Listbox(raam, height=5, width=int(ekraani_laius*0.05*0.7), yscrollcommand=scrollbar.set)
+taimeri_listbox.grid(row=6,column=4, columnspan=2, padx=10, sticky=(W))
+taimeri_listbox.config(yscrollcommand=scrollbar.set)
+scrollbar.config(command=taimeri_listbox.yview)
 
 #testiks
 stopperi_näidatav_aeg3=ttk.Label(raam, text= "2 tundi, 30 minutit, 25 sekundit.")
