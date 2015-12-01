@@ -7,7 +7,8 @@ except ImportError: #Python 2
     from Tkinter import ttk, font
     from Tkinter import messagebox
 import ctypes
-from time import sleep
+
+import backend # janar's work imported
 
 #hetkel on sisestatud vahemaadeks kindlat arvud, kuid tuleb muuta need ka sültuvaks ekraani suurusest
 
