@@ -199,8 +199,15 @@ taimeri_listbox.config(yscrollcommand=scrollbar.set)
 scrollbar.config(command=taimeri_listbox.yview)
 
 #testiks
-stopperi_näidatav_aeg3=ttk.Label(raam, text= "2 tundi, 30 minutit, 25 sekundit.")
+process1=ttk.Label(raam,text="chrome.exe")
+process1.grid(column=0, row=1, padx=20, pady=5, sticky=(W))
+
+process1_status=ttk.Label(raam, text=backend.GetProcessStatus("chrome.exe"))
+process1_status.grid(column=1, row=1, pady=5, sticky=(W))
+
+stopperi_näidatav_aeg3=ttk.Label(raam, text=backend.GetProcessTime("chrome.exe"))
 stopperi_näidatav_aeg3.grid(column=2, row=1, pady=5, sticky=(W))
+
 nulli=Button(raam, text="Nulli", command=nulli_stopper, width=8, bg=nupu_värv, font=headeri_font)
 nulli.grid(column=3, row=1, pady=5)
 
