@@ -39,15 +39,15 @@ def stopperi_tiksumine():
             stopperi_minutid=0
         stopperi_sekundid=0
         
-    stopperi_näidatav_aeg=ttk.Label(raam, text= str(stopperi_tunnid)+" tundi, "+str(stopperi_minutid)+ " minutit, "+str(stopperi_sekundid)+" sekundit.")
-    stopperi_näidatav_aeg.grid(column=5, row=1, ipadx=ekraani_laius*0.05, pady=5, sticky=(W))
+    stopperi_näidatav_aeg=ttk.Label(raam, text= str(stopperi_tunnid)+" tundi, "+str(stopperi_minutid)+ " minutit, "+str(stopperi_sekundid)+" sekundit.", background=tausta_värv)
+    stopperi_näidatav_aeg.grid(column=5, row=1, pady=5, sticky=(W), padx=15, columnspan=2)
     tiksumise_id=raam.after(1000, stopperi_tiksumine)
 
 def käivita_stopper():
     global stopperi_sekundid, stopperi_käivitamise_nupp, stopperi_peatamise_nupp
     stopperi_käivitamise_nupp.destroy()
     stopperi_peatamise_nupp = Button(raam, text="Peata stopper", command=peata_stopper, width=12, bg=nupu_värv, font=headeri_font)
-    stopperi_peatamise_nupp.grid(column=4, row=0, ipadx=ekraani_laius*0.1*0.7-70, pady=5, padx=10, sticky=(W))
+    stopperi_peatamise_nupp.grid(column=4, row=0, ipadx=ekraani_laius*0.1*0.7-70, pady=5, padx=15, sticky=(W))
     stopperi_sekundid-=1
     stopperi_tiksumine()
 
@@ -58,7 +58,7 @@ def peata_stopper():
     except:
         pass
     stopperi_käivitamise_nupp = Button(raam, text="Käivita stopper", command=käivita_stopper, width=12, bg=nupu_värv, font=headeri_font)
-    stopperi_käivitamise_nupp.grid(column=4, row=0, ipadx=ekraani_laius*0.1*0.7-70, pady=5, padx=10, sticky=(W))
+    stopperi_käivitamise_nupp.grid(column=4, row=0, ipadx=ekraani_laius*0.1*0.7-70, pady=5, padx=15, sticky=(W))
     raam.after_cancel(tiksumise_id)
 
 def nulli_stopper():
@@ -74,7 +74,7 @@ def käivita_taimer():
     lisaaken=Tk()
     lisaaken.bind_all("<Return>", lisa_taimer)
     lisaaken.title("Taimeri loomine")
-    lisaaken.geometry('%dx%d+%d+%d' % (300, 200, 0.45*ekraani_laius, 0.45*ekraani_kõrgus))
+    lisaaken.geometry('%dx%d+%d+%d' % (300, 200, 0.45*ekraani_laius, 0.45*ekraani_kõrgus))  #määran asukoha andmetega
     taimeri_header = ttk.Label(lisaaken, text="Sisestage aeg, pärast mida te soovite meeldetuletust:")
     taimeri_header.grid(row=0, column=0, columnspan=7, padx=5, pady=10)
     tundide_sisestus_taimerisse = ttk.Entry(lisaaken, width=3)
@@ -112,16 +112,23 @@ def lisa_taimer(event=0):
     except:
         sekund=0
     if minut==0 and tund==0 and sekund==0:
-        messagebox.showerror(message="Sisestaga kuhugi mõni numbertäisarv!", title="Error")
-    elif type(sekund)==int and type(minut)==int and type(tund)==int:
+        messagebox.showerror(message="Sisestaga kuhugi mõni täisarv!", title="Error")
+        lisaaken.attributes("-topmost", True)
+    elif sekund>=60:
+        messagebox.showerror(message="Sekundite arv ei ole sobiv!", title="Error")
+        lisaaken.attributes("-topmost", True) #selleks, et veateate korral jääks lisaaken raami ette
+        lisaaken.attributes("-topmost", False)#selleks, et lisaaken ei jääks nt browseri ette kui sa poole pealt browseri avad
+    elif minut>=60:
+        messagebox.showerror(message="Minutite arv ei ole sobiv!", title="Error")
+        lisaaken.attributes("-topmost", True)
+        lisaaken.attributes("-topmost", False)
+    elif type(sekund)==int and type(minut)==int and type(tund)==int:  #Vaatan, et mul oleks vähemalt 1 täisarv
         taimeri_sõnum=teadaanne.get()
         töötavad_taimerid.append(taimeri_sõnum)
         taimeri_listboxi_lisamine(töötavad_taimerid)
         aega_kuvamiseni=tund*3600+minut*60+sekund
         lisaaken.destroy()
         jälgi_taimerit(aega_kuvamiseni, taimeri_sõnum)
-    else:
-        messagebox.showerror(message="Sisestage ajaks täisarve!", title="Error")
 
 def jälgi_taimerit(aeg,sõnum):
     global töötavad_taimerid
@@ -137,10 +144,13 @@ def jälgi_taimerit(aeg,sõnum):
     else:
         pass
 
-def eemalda_taimer():  
+def eemalda_taimer(event=0):  
     global töötavad_taimerid
     sõnum = taimeri_listbox.get(ANCHOR)
-    töötavad_taimerid.remove(sõnum)
+    try:
+        töötavad_taimerid.remove(sõnum)
+    except:
+        pass
     taimeri_listbox.delete(ANCHOR)
 
 def taimeri_listboxi_lisamine(list):
@@ -165,43 +175,47 @@ raam.geometry('%dx%d+%d+%d' % (ekraani_laius, ekraani_kõrgus, 0.15*ekraani_laiu
 #pakun välja, et siia võiks kokku kirjutada nt kõik kasutatavad fondid
 headeri_font= font.Font(size=10, weight='bold')
 
+raam.bind_all("<Delete>", eemalda_taimer)
 
 #Teen kõige ülemise headeri rea:
 töötavate_programmide_header = ttk.Label(raam, text="Töötavate programmide nimekiri",font=headeri_font, background=tausta_värv, foreground=headeri_teksti_värv)
 programmide_aktiivsuse_header = ttk.Label(raam, text="Programmi aktiivsus", font=headeri_font, background=tausta_värv, foreground=headeri_teksti_värv)
 aja_header = ttk.Label(raam, text="Kulunud aeg", font=headeri_font, background=tausta_värv, foreground=headeri_teksti_värv)
-töötavate_programmide_header.grid(column=0, row=0, ipadx=ekraani_laius*0.25*0.7-180, pady=20, sticky=(W), padx=20)
-programmide_aktiivsuse_header.grid(column=1, row=0, ipadx=ekraani_laius*0.17*0.7-115, pady=20, sticky=(W))
-aja_header.grid(column=2, row=0, ipadx=ekraani_laius*0.16*0.7-66, pady=20, sticky=(W))
+töötavate_programmide_header.grid(column=0, row=0, ipadx=ekraani_laius*0.24*0.7-180, pady=20, sticky=(W), padx=15)
+programmide_aktiivsuse_header.grid(column=1, row=0, ipadx=ekraani_laius*0.17*0.7-115, pady=20, sticky=(W), padx=15)
+aja_header.grid(column=2, row=0, ipadx=ekraani_laius*0.15*0.7-66, pady=20, sticky=(W),padx=15)
 kõikide_aegade_nullimise_nupp = Button(raam, text="Nulli ajad", command=nulli_kõik, width=6, font=headeri_font, bg=nupu_värv)
-kõikide_aegade_nullimise_nupp.grid(column=3, row=0, ipadx=ekraani_laius*0.1*0.7-70, padx=10, pady=20, sticky=(W))
+kõikide_aegade_nullimise_nupp.grid(column=3, row=0, ipadx=ekraani_laius*0.1*0.7-70, padx=15, pady=20, sticky=(W))
+tühi_rida=Label(raam, background=tausta_värv).grid(row=0, column=6)  #selleks, et scrollbar püsiks taimeri juures paigal
 
 #teen stopperi:
 stopper=ttk.Label(raam, text="Stopper:", font=headeri_font, background=tausta_värv)
-stopper.grid(column=4, row=1, ipadx=ekraani_laius*0.01, pady=5, padx=10, sticky=(W))
+stopper.grid(column=4, row=1, ipadx=ekraani_laius*0.01, pady=5, padx=15, sticky=(W))
 stopperi_käivitamise_nupp = Button(raam, text="Käivita stopper", command=käivita_stopper, width=12, bg=nupu_värv, font=headeri_font)
-stopperi_käivitamise_nupp.grid(column=4, row=0, ipadx=ekraani_laius*0.1*0.7-70, pady=5, padx=10, sticky=(W))
+stopperi_käivitamise_nupp.grid(column=4, row=0, ipadx=ekraani_laius*0.1*0.7-70, pady=5, padx=15, sticky=(W))
 stopperi_nullimise_nupp= Button(raam, text="Nulli stopper", command=nulli_stopper, width=12, bg=nupu_värv, font=headeri_font)
-stopperi_nullimise_nupp.grid(column=5, row=0, pady=5, sticky=(W), padx=10)
+stopperi_nullimise_nupp.grid(column=5, row=0, pady=5, sticky=(W), padx=15)
 
 #teen taimeri
+raam.grid_columnconfigure(0)
 taimeri_lisamise_nupp=Button(raam, text="Lisa taimer", command=käivita_taimer, width=12, bg=nupu_värv, font=headeri_font)
-taimeri_lisamise_nupp.grid(column=4, row=3, pady=5, padx=10, sticky=(W))
+taimeri_lisamise_nupp.grid(column=4, row=3, pady=5, padx=15)
 taimeri_eemaldamise_nupp=Button(raam, text="Eemalda taimer", command=eemalda_taimer, width=13, bg=nupu_värv, font=headeri_font)
-taimeri_eemaldamise_nupp.grid(column=5, row=3, pady=5, padx=10, sticky=(W))
-taimeri_tekst=ttk.Label(raam, text="Hetkel töös olevad taimerid:")
-taimeri_tekst.grid(row=5, column=4, columnspan=2, padx=10, sticky=(W))
+taimeri_eemaldamise_nupp.grid(column=5, row=3, pady=5, padx=15, sticky=(W))
+taimeri_tekst=ttk.Label(raam, text="Hetkel töös olevad taimerid:", background=tausta_värv)
+taimeri_tekst.grid(row=5, column=4, columnspan=2, sticky=(W), padx=0)
+taimeri_listbox=Listbox(raam, height=5, width=int(ekraani_laius*0.06*0.7))
+taimeri_listbox.grid(row=6, column=4, padx=15, columnspan=2, sticky=(W))
 scrollbar=Scrollbar(raam)
-scrollbar.grid(row=6, column=4, columnspan=2, padx=10, sticky=(E,N,S))
-taimeri_listbox=Listbox(raam, height=5, width=int(ekraani_laius*0.05*0.7), yscrollcommand=scrollbar.set)
-taimeri_listbox.grid(row=6,column=4, columnspan=2, padx=10, sticky=(W))
-taimeri_listbox.config(yscrollcommand=scrollbar.set)
+scrollbar.grid(row=6, column=4, columnspan=2, sticky=(E,N,S))
 scrollbar.config(command=taimeri_listbox.yview)
+taimeri_listbox.config(yscrollcommand=scrollbar.set)
+
 
 #testiks
 stopperi_näidatav_aeg3=ttk.Label(raam, text= "2 tundi, 30 minutit, 25 sekundit.")
-stopperi_näidatav_aeg3.grid(column=2, row=1, pady=5, sticky=(W))
+stopperi_näidatav_aeg3.grid(column=2, row=1, pady=5, sticky=(W), padx=15)
 nulli=Button(raam, text="Nulli", command=nulli_stopper, width=8, bg=nupu_värv, font=headeri_font)
-nulli.grid(column=3, row=1, pady=5)
+nulli.grid(column=3, row=1, pady=5, padx=15)
 
 raam.mainloop()
