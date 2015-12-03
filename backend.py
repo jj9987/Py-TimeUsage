@@ -6,8 +6,6 @@ from time import sleep
 processes={}
 allok=False
 
-
-
 # opens the file for saving data, creates if can not open
 with open("applications.txt") as f:
 	for line in f:
