@@ -157,8 +157,15 @@ def taimeri_listboxi_lisamine(list):
     taimeri_listbox.delete(0,END)
     for element in list:
         taimeri_listbox.insert(END, element)
-    
-    
+
+viimati_klickitud_taimer=0
+def hiireklõps(event):
+    global töötavad_taimerid, viimati_klickitud_taimer
+    print(taimeri_listbox.curselection())
+    if taimeri_listbox.curselection()==viimati_klickitud_taimer:
+        taimeri_listbox.selection_clear(0,len(töötavad_taimerid)) # selleks, et highlightimine kohe kaoks
+        raam.after(300,taimeri_listboxi_lisamine,töötavad_taimerid)  #selleks, et ma saaksin taimeri listist asju eemaldada
+    viimati_klickitud_taimer=taimeri_listbox.curselection()
 
     
 #siia siis äkki värvid lisada?
@@ -175,7 +182,10 @@ raam.geometry('%dx%d+%d+%d' % (ekraani_laius, ekraani_kõrgus, 0.15*ekraani_laiu
 #pakun välja, et siia võiks kokku kirjutada nt kõik kasutatavad fondid
 headeri_font= font.Font(size=10, weight='bold')
 
+
 raam.bind_all("<Delete>", eemalda_taimer)
+raam.bind_all('<1>', hiireklõps)
+
 
 #Teen kõige ülemise headeri rea:
 töötavate_programmide_header = ttk.Label(raam, text="Töötavate programmide nimekiri",font=headeri_font, background=tausta_värv, foreground=headeri_teksti_värv)
@@ -186,25 +196,28 @@ programmide_aktiivsuse_header.grid(column=1, row=0, ipadx=ekraani_laius*0.17*0.7
 aja_header.grid(column=2, row=0, ipadx=ekraani_laius*0.15*0.7-66, pady=20, sticky=(W),padx=15)
 kõikide_aegade_nullimise_nupp = Button(raam, text="Nulli ajad", command=nulli_kõik, width=6, font=headeri_font, bg=nupu_värv)
 kõikide_aegade_nullimise_nupp.grid(column=3, row=0, ipadx=ekraani_laius*0.1*0.7-70, padx=15, pady=20, sticky=(W))
-tühi_rida=Label(raam, background=tausta_värv).grid(row=0, column=6)  #selleks, et scrollbar püsiks taimeri juures paigal
 
 #teen stopperi:
 stopper=ttk.Label(raam, text="Stopper:", font=headeri_font, background=tausta_värv)
 stopper.grid(column=4, row=1, ipadx=ekraani_laius*0.01, pady=5, padx=15, sticky=(W))
+#selleks, et nupud ei liiguks:
+stopperi_aja_koht=ttk.Label(raam, text="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", foreground=tausta_värv, background=tausta_värv)
+tühi_rida=Label(raam, background=tausta_värv, text="aaaaaaaaaaaaaaa", foreground=tausta_värv).grid(row=0, column=6)
+tühi_rida=Label(raam, background=tausta_värv, text="aaaaaaaaaaaaaaaa", foreground=tausta_värv).grid(row=0, column=7)
+stopperi_aja_koht.grid(column=5, row=1, columnspan=3, pady=5, padx=15, sticky=(W))
 stopperi_käivitamise_nupp = Button(raam, text="Käivita stopper", command=käivita_stopper, width=12, bg=nupu_värv, font=headeri_font)
 stopperi_käivitamise_nupp.grid(column=4, row=0, ipadx=ekraani_laius*0.1*0.7-70, pady=5, padx=15, sticky=(W))
 stopperi_nullimise_nupp= Button(raam, text="Nulli stopper", command=nulli_stopper, width=12, bg=nupu_värv, font=headeri_font)
 stopperi_nullimise_nupp.grid(column=5, row=0, pady=5, sticky=(W), padx=15)
 
 #teen taimeri
-raam.grid_columnconfigure(0)
 taimeri_lisamise_nupp=Button(raam, text="Lisa taimer", command=käivita_taimer, width=12, bg=nupu_värv, font=headeri_font)
-taimeri_lisamise_nupp.grid(column=4, row=3, pady=5, padx=15)
+taimeri_lisamise_nupp.grid(column=4, row=3, pady=5, padx=15, sticky=(W))
 taimeri_eemaldamise_nupp=Button(raam, text="Eemalda taimer", command=eemalda_taimer, width=13, bg=nupu_värv, font=headeri_font)
 taimeri_eemaldamise_nupp.grid(column=5, row=3, pady=5, padx=15, sticky=(W))
 taimeri_tekst=ttk.Label(raam, text="Hetkel töös olevad taimerid:", background=tausta_värv)
 taimeri_tekst.grid(row=5, column=4, columnspan=2, sticky=(W), padx=0)
-taimeri_listbox=Listbox(raam, height=5, width=int(ekraani_laius*0.06*0.7))
+taimeri_listbox=Listbox(raam, height=5, width=int(ekraani_laius*0.06*0.7), selectmode="single")
 taimeri_listbox.grid(row=6, column=4, padx=15, columnspan=2, sticky=(W))
 scrollbar=Scrollbar(raam)
 scrollbar.grid(row=6, column=4, columnspan=2, sticky=(E,N,S))
@@ -212,7 +225,8 @@ scrollbar.config(command=taimeri_listbox.yview)
 taimeri_listbox.config(yscrollcommand=scrollbar.set)
 
 
-#testiks #testiks
+
+#testiks
 stopperi_näidatav_aeg3=ttk.Label(raam, text= "2 tundi, 30 minutit, 25 sekundit.")
 process1=ttk.Label(raam,text="chrome.exe")
 process1.grid(column=0, row=1, padx=20, pady=5, sticky=(W))
