@@ -10,6 +10,8 @@ import ctypes
 
 import backend # janar's work imported
 
+katselist=["mamma", "sai", "tuba", "nuga", "laut", "liha", "tuum"]
+katse_olemasolev=["janar", "juusu", "jannu", "jussu"]                        #ajutised asjad
 
 töötavad_taimerid=[]
 
@@ -161,11 +163,25 @@ def taimeri_listboxi_lisamine(list):
 viimati_klickitud_taimer=0
 def hiireklõps(event):
     global töötavad_taimerid, viimati_klickitud_taimer
-    print(taimeri_listbox.curselection())
     if taimeri_listbox.curselection()==viimati_klickitud_taimer:
         taimeri_listbox.selection_clear(0,len(töötavad_taimerid)) # selleks, et highlightimine kohe kaoks
         raam.after(300,taimeri_listboxi_lisamine,töötavad_taimerid)  #selleks, et ma saaksin taimeri listist asju eemaldada
     viimati_klickitud_taimer=taimeri_listbox.curselection()
+
+def radiobutton_job(list,arv):     #teen progrgrammide loetelusse lisamise koha
+    if arv==0:
+        programmide_lisamise_jutt=ttk.Label(raam, text="Vali jälgimiseks soovitud programm:", background=tausta_värv, font=headeri_font)
+    else:
+        programmide_lisamise_jutt=ttk.Label(raam, text="Vali eemaldamiseks soovitud programm:", background=tausta_värv, font=headeri_font) 
+    programmide_lisamise_jutt.grid(column=4, columnspan=2, row=8, padx=15, pady=5, sticky=(W))
+    programmide_listbox=Listbox(raam, height=5, width=int(ekraani_laius*0.06*0.7), selectmode="single")
+    programmide_listbox.grid(row=9, column=4, padx=15, columnspan=2, sticky=(W))
+    prog_scrollbar=Scrollbar(raam)
+    prog_scrollbar.grid(row=9, column=4, columnspan=2, sticky=(E,N,S))
+    prog_scrollbar.config(command=programmide_listbox.yview)
+    programmide_listbox.config(yscrollcommand=prog_scrollbar.set)
+    for element in list:
+        programmide_listbox.insert(END, element)
 
     
 #siia siis äkki värvid lisada?
@@ -224,7 +240,14 @@ scrollbar.grid(row=6, column=4, columnspan=2, sticky=(E,N,S))
 scrollbar.config(command=taimeri_listbox.yview)
 taimeri_listbox.config(yscrollcommand=scrollbar.set)
 
+#teen programmide lisamiseks ja eemaldamiseks radiobuttonid
+var=IntVar()
+nupp_eemalda=Radiobutton(raam, text="Eemalda programme",value=2, variable=var, command=lambda: radiobutton_job(katse_olemasolev,1))
+nupp_eemalda.grid(row=7, column=5, padx=15, pady=5, columnspan=2, sticky=(W))
+nupp_lisa=Radiobutton(raam, text="lisa programme", value=1, variable=var, command=lambda: radiobutton_job(katselist,0))
+nupp_lisa.grid(row=7, column=4, padx=15, pady=5, sticky=(W))
 
+                      
 
 #testiks
 stopperi_näidatav_aeg3=ttk.Label(raam, text= "2 tundi, 30 minutit, 25 sekundit.")
