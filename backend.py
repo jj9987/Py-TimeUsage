@@ -51,7 +51,7 @@ while(all_ok == True):
 	if(i==300): # updates file after every 5 minutes
 		with open("applications.txt", "w") as f:
 			for item in processes:
-				f.write(item[0]+" "+str(item[1]))
+				f.write(item[0]+" "+str(item[1])+"\n")
 
 	print(processes)
 	sleep(1)
