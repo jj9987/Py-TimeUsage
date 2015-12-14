@@ -4,7 +4,7 @@ import os
 from time import sleep
 
 processes=[]
-all_ok=True
+all_ok=False
 
 # opens the file for saving data, creates if can not open
 if(os.path.isfile("applications.txt")):
@@ -12,24 +12,23 @@ if(os.path.isfile("applications.txt")):
 		for line in f:
 			line=line.split()
 			processes.append([line[0],int(line[1])])
-print(processes)
 
 def AddNewApplication(processname):
-	processes[processname] = 0
-	print(processes)
+	processes.append([processname,0])
 	return True
 
 def GetProcessTime(processname):
-	return processes[processname]
+	for item in processes:
+		if(item[0] == processname):
+			return item[1]
+	return "Process not found"
 
 def GetProcessStatus(processname):
 	p_tasklist = subprocess.Popen('tasklist.exe /fo csv',
                               stdout=subprocess.PIPE,
                               universal_newlines=True)
-
 	for p in csv.DictReader(p_tasklist.stdout):
 		if(p['Image Name'] == processname):	return "Running"
-
 	return "Not running"
 
 
@@ -52,7 +51,7 @@ while(all_ok == True):
 	if(i==300): # updates file after every 5 minutes
 		with open("applications.txt", "w") as f:
 			for item in processes:
-				f.write(item[0]+" "+item[1])
+				f.write(item[0]+" "+str(item[1]))
 
 	print(processes)
 	sleep(1)

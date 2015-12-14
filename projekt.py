@@ -250,6 +250,9 @@ nupp_lisa.grid(row=7, column=4, padx=15, pady=5, sticky=(W))
                       
 
 #testiks
+
+# generate process-ID
+
 stopperi_näidatav_aeg3=ttk.Label(raam, text= "2 tundi, 30 minutit, 25 sekundit.")
 process1=ttk.Label(raam,text="chrome.exe")
 process1.grid(column=0, row=1, padx=20, pady=5, sticky=(W))
