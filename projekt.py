@@ -160,28 +160,85 @@ def taimeri_listboxi_lisamine(list):
     for element in list:
         taimeri_listbox.insert(END, element)
 
-viimati_klickitud_taimer=0
-def hiireklõps(event):
-    global töötavad_taimerid, viimati_klickitud_taimer
-    if taimeri_listbox.curselection()==viimati_klickitud_taimer:
+
+viimati_klickitud_taimeri_koht=0
+viimati_klickitud_programmi_koht=0
+def hiireklõps(event=0):
+    global töötavad_taimerid, viimati_klickitud_taimeri_koht, katselist, katse_olemasolev, viimati_klickitud_programmi_koht, programmide_listbox, after_id
+    if taimeri_listbox.curselection()==viimati_klickitud_taimeri_koht:
         taimeri_listbox.selection_clear(0,len(töötavad_taimerid)) # selleks, et highlightimine kohe kaoks
         raam.after(300,taimeri_listboxi_lisamine,töötavad_taimerid)  #selleks, et ma saaksin taimeri listist asju eemaldada
-    viimati_klickitud_taimer=taimeri_listbox.curselection()
-
-def radiobutton_job(list,arv):     #teen progrgrammide loetelusse lisamise koha
-    if arv==0:
-        programmide_lisamise_jutt=ttk.Label(raam, text="Vali jälgimiseks soovitud programm:", background=tausta_värv, font=headeri_font)
     else:
-        programmide_lisamise_jutt=ttk.Label(raam, text="Vali eemaldamiseks soovitud programm:", background=tausta_värv, font=headeri_font) 
-    programmide_lisamise_jutt.grid(column=4, columnspan=2, row=8, padx=15, pady=5, sticky=(W))
+        kontrollarv=1
+    viimati_klickitud_taimeri_koht=taimeri_listbox.curselection()
+
+    try:            #juhuks kui programmide listoxi pole loodud
+        #print(programmide_listbox.curselection()==viimati_klickitud_programmi_koht)
+        if programmide_listbox.curselection()==viimati_klickitud_programmi_koht:
+            if len(katselist)>len(katse_olemasolev):
+                pikkus=len(katselist)
+            else:
+                pikkus=len(katse_olemasolev)
+            programmide_listbox.selection_clear(0, pikkus) # selleks, et highlightimine kohe kaoks
+            arv=leia_arv()
+            if arv==0:
+                lisatav_list=katselist
+            else:
+                lisatav_list=katse_olemasolev
+            after_id=raam.after(300,programmide_listboxi_lisamine, lisatav_list)  #selleks, et ma saaksin  normaalselt taimeri listist asju eemaldada
+        viimati_klickitud_programmi_koht=programmide_listbox.curselection()    
+    except:
+        pass
+
+def radiobutton_job(list):     #teen progrgrammide loetelusse lisamise koha
+    global programmide_jutt, programmide_listbox, after_id
+    arv=leia_arv()
+    try:
+        raam.after_cancel(after_id)    #juhuks kui after pole veel välja kutsutud
+    except:
+        pass
+    try:                              #et esimene kord raadiouppu valides ei tuleks errorit
+        programmide_jutt.destroy()
+    except:
+        pass
+            
+    if arv==0:
+        programmide_jutt=ttk.Label(raam, text="Vali jälgimiseks soovitud programm:", background=tausta_värv, font=headeri_font)
+    else:
+        programmide_jutt=ttk.Label(raam, text="Vali eemaldamiseks soovitud programm:", background=tausta_värv, font=headeri_font) 
+    programmide_jutt.grid(column=4, columnspan=2, row=8, padx=15, pady=5, sticky=(W))
     programmide_listbox=Listbox(raam, height=5, width=int(ekraani_laius*0.06*0.7), selectmode="single")
     programmide_listbox.grid(row=9, column=4, padx=15, columnspan=2, sticky=(W))
     prog_scrollbar=Scrollbar(raam)
     prog_scrollbar.grid(row=9, column=4, columnspan=2, sticky=(E,N,S))
     prog_scrollbar.config(command=programmide_listbox.yview)
     programmide_listbox.config(yscrollcommand=prog_scrollbar.set)
+    programmide_listboxi_lisamine(list)
+
+def programmide_listboxi_lisamine(list):
+    arv=leia_arv()
+    programmide_listbox.delete(0,END)
     for element in list:
         programmide_listbox.insert(END, element)
+    if arv==0:
+        nupp=Button(raam, text="Lisa programm", command=lisa_programm, width=25, font=headeri_font, bg=nupu_värv)
+        nupp.grid(column=4, row= 10, columnspan=2, padx=15, pady=5, sticky=(W))
+    else:
+        nupp=Button(raam, text="Eemalda programm", command=eemalda_programm, width=25, font=headeri_font, bg=nupu_värv)
+        nupp.grid(column=4, row= 10, columnspan=2, padx=15, pady=5, sticky=(W))
+
+def leia_arv():
+    if var.get()==2:
+        return 0
+    elif var.get()==1:
+        return 1
+
+        
+def lisa_programm():  #vajab tegemist
+    a=1
+
+def eemalda_programm():  #vajab tegemist
+    a=1
 
     
 #siia siis äkki värvid lisada?
@@ -242,12 +299,12 @@ taimeri_listbox.config(yscrollcommand=scrollbar.set)
 
 #teen programmide lisamiseks ja eemaldamiseks radiobuttonid
 var=IntVar()
-nupp_eemalda=Radiobutton(raam, text="Eemalda programme",value=2, variable=var, command=lambda: radiobutton_job(katse_olemasolev,1))
+nupp_eemalda=Radiobutton(raam, text="Eemalda programme",value=1, variable=var, command=lambda: radiobutton_job(katse_olemasolev))
 nupp_eemalda.grid(row=7, column=5, padx=15, pady=5, columnspan=2, sticky=(W))
-nupp_lisa=Radiobutton(raam, text="lisa programme", value=1, variable=var, command=lambda: radiobutton_job(katselist,0))
+nupp_lisa=Radiobutton(raam, text="lisa programme", value=2, variable=var, command=lambda: radiobutton_job(katselist))
 nupp_lisa.grid(row=7, column=4, padx=15, pady=5, sticky=(W))
 
-                      
+
 
 #testiks
 
