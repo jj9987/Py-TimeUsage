@@ -61,7 +61,10 @@ def peata_stopper():
         pass
     stopperi_käivitamise_nupp = Button(raam, text="Käivita stopper", command=käivita_stopper, width=12, bg=nupu_värv, font=headeri_font)
     stopperi_käivitamise_nupp.grid(column=4, row=0, ipadx=ekraani_laius*0.1*0.7-70, pady=5, padx=15, sticky=(W))
-    raam.after_cancel(tiksumise_id)
+    try:
+        raam.after_cancel(tiksumise_id) # juhuks kui nullimise nupu vajutades pole stopperit tööle pandud
+    except:
+        pass
 
 def nulli_stopper():
     global stopperi_sekundid, stopperi_minutid, stopperi_sekundid, stopperi_näidatav_aeg
