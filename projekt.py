@@ -329,7 +329,7 @@ nulli=Button(raam, text="Nulli", command=nulli_stopper, width=8, bg=nupu_värv, 
 nulli.grid(column=3, row=1, pady=5)
 
 class BackgroundService (threading.Thread):
-	def __init__(self, threadID, name, counter, event):
+	def __init__(self, threadID, name, counter):
 		threading.Thread.__init__(self)
 		self.threadID = threadID
 		self.name = name
@@ -340,7 +340,7 @@ class BackgroundService (threading.Thread):
 			backend.worker()
 
 class Updater (threading.Thread):
-	def __init__(self, threadID, name, counter, event):
+	def __init__(self, threadID, name, counter):
 		threading.Thread.__init__(self)
 		self.threadID = threadID
 		self.name = name
@@ -350,15 +350,9 @@ class Updater (threading.Thread):
 		while not self.stopped.wait(0.5):
 			update_processes()
 
-stopFlag = Event()
-thread1 = BackgroundService(1, "Thread-1", 1, stopFlag)
+thread1 = BackgroundService(1, "Thread-1", 1)
 thread1.start()
-thread2 = Updater(2,"Thread-2",2,stopFlag)
+thread2 = Updater(2,"Thread-2",2)
 thread2.start()
 
-<<<<<<< HEAD
 raam.mainloop()
-=======
-
-raam.mainloop()
->>>>>>> origin/master

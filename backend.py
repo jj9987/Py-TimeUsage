@@ -4,7 +4,7 @@ import os
 
 def worker():
 	i=0
-	p_tasklist = subprocess.Popen('tasklist.exe /fo csv', stdout=subprocess.PIPE, universal_newlines=True, creationflags=0x08000000)
+	p_tasklist = subprocess.Popen('tasklist.exe /fo csv', stdout=subprocess.PIPE, universal_newlines=True, creationflags=0x08000008)
 	for p in csv.DictReader(p_tasklist.stdout):
 		if(p['Image Name'] == "chrome.exe"):
 			continue
