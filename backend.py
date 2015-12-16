@@ -39,8 +39,6 @@ else:
 			line=line.split()
 			processes.append([line[0],int(line[1]),0])
 
-
-Check_Application("chrome.exe")
 def GetProcessTime(processname):
 	for item in processes:
 		if(item[0] == processname):

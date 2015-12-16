@@ -44,14 +44,14 @@ def update_processes():
 		count+=1
 
 def seconds_conversion(time):
-	minutes=int(time/60)
+    minutes=int(time/60)
     if(minutes >= 60):
         hours = int(minutes/60)
         minutes = minutes - hours*60
         result = str(hours) + " tundi " + str(minutes) + " minutit " + str(time%60) + " sekundit "
     elif(time < 60): result = str(time) + " sekundit " # less than 60 seconds
     elif(time >= 60 and time < 3600): result = str(minutes) + " minutit " + str(time%60) + " sekundit "
-	return result
+    return result
 
 def stopperi_tiksumine():
     global stopperi_sekundid, stopperi_näidatav_aeg, tiksumise_id, stopperi_minutid, stopperi_tunnid
@@ -369,19 +369,6 @@ stopperi_näidatav_aeg3=ttk.Label(raam, text= "2 tundi, 30 minutit, 25 sekundit.
 nulli=Button(raam, text="Nulli", command=nulli_stopper, width=8, bg=nupu_värv, font=headeri_font)
 nulli.grid(column=3, row=1, pady=5)
 
-class BackgroundService (threading.Thread):
-	def __init__(self, threadID, name, counter):
-		threading.Thread.__init__(self)
-		self.threadID = threadID
-		self.name = name
-		self.counter = counter
-		self.stopped = threading.Event()
-	def run(self):
-		while not self.stopped.wait(1):
-			backend.worker()
-	def stop(self):
-		self.stopped.set()
-
 class Updater (threading.Thread):
 	def __init__(self, threadID, name, counter, event):
 		threading.Thread.__init__(self)
@@ -395,15 +382,13 @@ class Updater (threading.Thread):
 	def stop(self):
 		self.stopped.set()
 
-thread1 = BackgroundService(1, "Thread-1", 1)
-#thread1.start()
-global thread2, stopFlag
+global thread1, stopFlag
 stopFlag = threading.Event()
-thread2 = Updater(2,"Thread-2",2,stopFlag)
+thread1 = Updater(1,"Thread-1",1,stopFlag)
 #thread2.start()
 
-def callback():
-    if messagebox.askokcancel("Quit", "Do you really wish to quit?"):
+def callback(): # callback when closing application from X
+    if messagebox.askokcancel("Välju", "Kas sa soovid programmi sulgeda?"):
         raam.destroy()
         backend.SaveData()
         stopFlag.set()
