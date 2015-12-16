@@ -87,7 +87,7 @@ def Check_Application(filename):
                     item.insert(2,"Ei tööta")
                     if(item[0] == filename):
                         item[1] +=1
-                        item[2] = "Töötab"
+                        item.insert(2,"Töötab")
             break
     #print(result)
 
@@ -412,7 +412,7 @@ def leia_arv():
 
         
 def lisa_programm(nimi):
-    processes.append([nimi,0])
+    processes.append([nimi,0,"Ei tööta"])
     programmi_sisend.delete(0,END)
     Delete_Old_Table_Data()
     
