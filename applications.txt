@@ -1,9 +1,8 @@
-sublime_text.exe 1206
-flux.exe 607
-opera.exe 5000000
-conhost.exe 90300
-winlogon.exe 3493
-svchost.exe 455555854
-Skype.exe 1635
-steam.exe 50299
-chrome.exe 92
+flux.exe 10
+opera.exe 0
+conhost.exe 10
+svchost.exe 10
+Skype.exe 10
+steam.exe 9
+chrome.exe 9
+sublime_text.exe 9

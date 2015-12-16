@@ -25,8 +25,10 @@ user32 = ctypes.windll.user32
 ekraani_laius= round(0.72*user32.GetSystemMetrics(0))
 ekraani_kõrgus= round(0.7*user32.GetSystemMetrics(1))
 
-def nulli_kõik():   #vajab täielikku tegemist
-    a=1 #lihtsalt, et siin miadgi oleks hetkel :D
+def nulli_kõik():
+    Delete_Old_Table_Data()
+    for item in processes:
+        item[1] = 0
 
 stopperi_sekundid=0
 stopperi_minutid=0
@@ -86,6 +88,23 @@ def Check_Application(filename):
                         item[2] = "Töötab"
             break
     #print(result)
+
+def Delete_Old_Table_Data():    
+    emptylabe1=ttk.Label(raam,text="                              ", background=tausta_värv)
+    emptylabe1.grid(column=0,row=1,padx=20, sticky=(W))
+    emptylabe2=ttk.Label(raam,text="                              ", background=tausta_värv)
+    emptylabe2.grid(column=1,row=1,padx=20, sticky=(W))
+    emptylabe3=ttk.Label(raam,text="                              ", background=tausta_värv)
+    emptylabe3.grid(column=2,row=1,padx=20, sticky=(W))
+    count=2
+    for i in processes:
+        emptylabel1=ttk.Label(raam,text="                              ", background=tausta_värv)
+        emptylabel1.grid(column=0,row=count,padx=20, sticky=(W))
+        emptylabel2=ttk.Label(raam,text="                              ", background=tausta_värv)
+        emptylabel2.grid(column=1,row=count,padx=20, sticky=(W))
+        emptylabel3=ttk.Label(raam,text="                              ", background=tausta_värv)
+        emptylabel3.grid(column=2,row=count,padx=20, sticky=(W))
+        count+=1
 
 def SaveData():
     with open("applications.txt", "w") as f:
@@ -393,12 +412,14 @@ def leia_arv():
 def lisa_programm(nimi):
     processes.append([nimi,0])
     programmi_sisend.delete(0,END)
+    Delete_Old_Table_Data()
     
     
 def eemalda_programm(nimi):
     for item in processes:
         if item[0] == nimi:
             processes.remove(item)
+            Delete_Old_Table_Data()
             break
 
 
