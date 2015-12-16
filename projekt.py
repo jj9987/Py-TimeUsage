@@ -7,16 +7,22 @@ except ImportError: #Python 2
     from Tkinter import ttk, font
     from Tkinter import messagebox
 import ctypes
+import subprocess
+import os
+import threading
+from time import sleep
 
-import backend # janar's work imported
 
-katselist=["mamma", "sai", "tuba", "nuga", "laut", "liha", "tuum"]
-katse_olemasolev=["janar", "juusu", "jannu", "jussu"]                        #ajutised asjad
+global startupinfo
+startupinfo = subprocess.STARTUPINFO()
+startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
 
+global processes
+processes=[]
 töötavad_taimerid=[]
 
 user32 = ctypes.windll.user32
-ekraani_laius= round(0.7*user32.GetSystemMetrics(0))
+ekraani_laius= round(0.72*user32.GetSystemMetrics(0))
 ekraani_kõrgus= round(0.7*user32.GetSystemMetrics(1))
 
 def nulli_kõik():   #vajab täielikku tegemist
@@ -25,6 +31,116 @@ def nulli_kõik():   #vajab täielikku tegemist
 stopperi_sekundid=0
 stopperi_minutid=0
 stopperi_tunnid=0
+
+"""
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+_________ _______  _______           _       _________ _______  _______  _               _______ _________          _______  _______ 
+\__   __/(  ____ \(  ____ \|\     /|( (    /|\__   __/(  ____ \(  ___  )( \             (  ____ \\__   __/|\     /|(  ____ \(  ____ \
+   ) (   | (    \/| (    \/| )   ( ||  \  ( |   ) (   | (    \/| (   ) || (             | (    \/   ) (   | )   ( || (    \/| (    \/
+   | |   | (__    | |      | (___) ||   \ | |   | |   | |      | (___) || |             | (_____    | |   | |   | || (__    | (__    
+   | |   |  __)   | |      |  ___  || (\ \) |   | |   | |      |  ___  || |             (_____  )   | |   | |   | ||  __)   |  __)   
+   | |   | (      | |      | (   ) || | \   |   | |   | |      | (   ) || |                   ) |   | |   | |   | || (      | (      
+   | |   | (____/\| (____/\| )   ( || )  \  |___) (___| (____/\| )   ( || (____/\       /\____) |   | |   | (___) || )      | )      
+   )_(   (_______/(_______/|/     \||/    )_)\_______/(_______/|/     \|(_______/       \_______)   )_(   (_______)|/       |/       
+                                                                                                                                
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+"""
+
+def update_processes():
+    count=1
+    for i in processes:      
+        Check_Application(i[0])
+        shown_processes = ttk.Label(raam,text=i[0], background=tausta_värv)
+        shown_processes.grid(column=0,row=count,padx=20, sticky=(W))
+        shown_processes_status = ttk.Label(raam,text=i[2], background=tausta_värv)
+        shown_processes_status.grid(column=1,row=count, padx=20, sticky=(W))
+        shown_processes_time = ttk.Label(raam, text=seconds_conversion(i[1]), background=tausta_värv)
+        shown_processes_time.grid(column=2, row=count, padx=20, sticky=(W))
+        count+=1
+
+def seconds_conversion(time):
+    minutes=int(time/60)
+    if(minutes >= 60):
+        hours = int(minutes/60)
+        minutes = minutes - hours*60
+        result = str(hours) + " tundi " + str(minutes) + " minutit " + str(time%60) + " sekundit "
+    elif(time < 60): result = str(time) + " sekundit " # less than 60 seconds
+    elif(time >= 60 and time < 3600): result = str(minutes) + " minutit " + str(time%60) + " sekundit "
+    return result
+
+def Check_Application(filename):
+    error="INFO: No tasks are running which match the specified criteria.\n"
+    query = """tasklist /FI "IMAGENAME eq """+str(filename)+""" " """
+    #print(query)
+    p_tasklist = subprocess.Popen(query, stdout=subprocess.PIPE, universal_newlines=True, startupinfo=startupinfo)
+    result = p_tasklist.communicate()[0]
+    if(result == error): 
+        for item in processes:
+            if(item[0] == filename):
+                item[2] = "Ei tööta"
+                break
+    else:
+        for item in processes:
+            item[2] = "Ei tööta" # set running status to 0, will be set to 1 if found later ;)
+            if(item[0] == filename):
+                item[1] +=1
+                item[2] = "Töötab"
+                break
+    #print(result)
+
+def SaveData():
+    with open("applications.txt", "w") as f:
+        for item in processes:
+            f.write(item[0]+" "+str(item[1])+"\n")
+
+def LoadFile():
+    # opens the file for saving data, creates if can not open
+    if(not os.path.isfile("applications.txt")):
+        fail=open("applications.txt",'w')
+        fail.close()
+    else:
+        with open("applications.txt") as f:
+            for line in f:
+                line=line.split()
+                processes.append([line[0],int(line[1]),"Ei tööta"])
+
+def callback(): # callback when closing application from X
+    if messagebox.askokcancel("Välju", "Kas sa soovid programmi sulgeda?"):
+        raam.destroy()
+        SaveData()
+        stopFlag.set()
+
+class Updater (threading.Thread):
+    def __init__(self, threadID, name, counter, event):
+        threading.Thread.__init__(self)
+        self.threadID = threadID
+        self.name = name
+        self.counter = counter
+        self.stopped = event
+    def run(self):
+        while not self.stopped.wait(0.5):
+            update_processes()
+    def stop(self):
+        self.stopped.set()
+
+global thread1, stopFlag
+stopFlag = threading.Event()
+thread1 = Updater(1,"Thread-1",1,stopFlag)
+thread1.start()
+
+"""
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+ _______ _________ _______  _______  _______  _______  _______       _______ _________          _______  _______ 
+(  ____ \\__   __/(  ___  )(  ____ )(  ____ )(  ____ \(  ____ )     (  ____ \\__   __/|\     /|(  ____ \(  ____ \
+| (    \/   ) (   | (   ) || (    )|| (    )|| (    \/| (    )|     | (    \/   ) (   | )   ( || (    \/| (    \/
+| (_____    | |   | |   | || (____)|| (____)|| (__    | (____)|     | (_____    | |   | |   | || (__    | (__    
+(_____  )   | |   | |   | ||  _____)|  _____)|  __)   |     __)     (_____  )   | |   | |   | ||  __)   |  __)   
+      ) |   | |   | |   | || (      | (      | (      | (\ (              ) |   | |   | |   | || (      | (      
+/\____) |   | |   | (___) || )      | )      | (____/\| ) \ \__     /\____) |   | |   | (___) || )      | )      
+\_______)   )_(   (_______)|/       |/       (_______/|/   \__/     \_______)   )_(   (_______)|/       |/       
+                                                                                                              
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+"""
 
 def stopperi_tiksumine():
     global stopperi_sekundid, stopperi_näidatav_aeg, tiksumise_id, stopperi_minutid, stopperi_tunnid
@@ -72,7 +188,24 @@ def nulli_stopper():
     stopperi_sekundid=0
     stopperi_minutid=0
     stopperi_tunnid=0
-    stopperi_näidatav_aeg.destroy()
+    try: 
+        stopperi_näidatav_aeg.destroy()
+    except: 
+        pass
+
+"""
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+_________ _______ _________ _______  _______  _______         _______ _________          _______  _______ 
+\__   __/(  ___  )\__   __/(       )(  ____ \(  ____ )       (  ____ \\__   __/|\     /|(  ____ \(  ____ \
+   ) (   | (   ) |   ) (   | () () || (    \/| (    )|       | (    \/   ) (   | )   ( || (    \/| (    \/
+   | |   | (___) |   | |   | || || || (__    | (____)|       | (_____    | |   | |   | || (__    | (__    
+   | |   |  ___  |   | |   | |(_)| ||  __)   |     __)       (_____  )   | |   | |   | ||  __)   |  __)   
+   | |   | (   ) |   | |   | |   | || (      | (\ (                ) |   | |   | |   | || (      | (      
+   | |   | )   ( |___) (___| )   ( || (____/\| ) \ \__       /\____) |   | |   | (___) || )      | )      
+   )_(   |/     \|\_______/|/     \|(_______/|/   \__/       \_______)   )_(   (_______)|/       |/       
+                                                                                                     
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+"""
 
 def käivita_taimer():
     global lisaaken, tundide_sisestus_taimerisse, minutite_sisestus_taimerisse, sekundite_sisestus_taimerisse, teadaanne
@@ -193,41 +326,62 @@ def hiireklõps(event=0):
     except:
         pass
 
-def radiobutton_job(list):     #teen progrgrammide loetelusse lisamise koha
-    global programmide_jutt, programmide_listbox, after_id
+def radiobutton_job(saadud_list):     #teen progrgrammide loetelusse lisamise koha
+    global programmide_jutt, programmide_listbox, after_id, prog_scrollbar, nupp, programmi_sisend
     arv=leia_arv()
     try:
         raam.after_cancel(after_id)    #juhuks kui after pole veel välja kutsutud
     except:
         pass
-    try:                              #et esimene kord raadiouppu valides ei tuleks errorit
+    try:                              #et boldis tekst tuleks korralikult
         programmide_jutt.destroy()
     except:
-        pass
-            
+        pass     
     if arv==0:
-        programmide_jutt=ttk.Label(raam, text="Vali jälgimiseks soovitud programm:", background=tausta_värv, font=headeri_font)
+        try:
+            programmide_listbox.destroy()        #juhuks kui esimene radiobutton on programmide lisamine
+            prog_scrollbar.destroy()
+            nupp.destroy()
+        except:
+            try:
+                nupp.destroy()
+            except:
+                pass
+        programmide_jutt=ttk.Label(raam, text="Lisa jälgimiseks soovitud programm:", background=tausta_värv, font=headeri_font)
+        programmide_jutt.grid(column=4, columnspan=2, row=8, padx=15, pady=5, sticky=(W))
+        info=ttk.Label(raam, text="Siia tuleks lisada exe faili nimi soovitavast failist:", background=tausta_värv)
+        info.grid(column=4, columnspan=2, row=9, padx=15, pady=5, sticky=(W))        
+        programmi_sisend=ttk.Entry(raam, background=tausta_värv, width=int(ekraani_laius*0.059*0.7))
+        programmi_sisend.grid(row=10, column=4, columnspan=2, pady=5, padx=15, sticky=(W))
+        nupp=Button(raam, text="Lisa programm", command=lambda: lisa_programm(programmi_sisend.get()), width=25, font=headeri_font, bg=nupu_värv)
+        nupp.grid(column=4, row= 11, columnspan=2, padx=15, pady=5, sticky=(W))
     else:
-        programmide_jutt=ttk.Label(raam, text="Vali eemaldamiseks soovitud programm:", background=tausta_värv, font=headeri_font) 
-    programmide_jutt.grid(column=4, columnspan=2, row=8, padx=15, pady=5, sticky=(W))
-    programmide_listbox=Listbox(raam, height=5, width=int(ekraani_laius*0.06*0.7), selectmode="single")
-    programmide_listbox.grid(row=9, column=4, padx=15, columnspan=2, sticky=(W))
-    prog_scrollbar=Scrollbar(raam)
-    prog_scrollbar.grid(row=9, column=4, columnspan=2, sticky=(E,N,S))
-    prog_scrollbar.config(command=programmide_listbox.yview)
-    programmide_listbox.config(yscrollcommand=prog_scrollbar.set)
-    programmide_listboxi_lisamine(list)
-
-def programmide_listboxi_lisamine(list):
-    arv=leia_arv()
-    programmide_listbox.delete(0,END)
-    for element in list:
-        programmide_listbox.insert(END, element)
-    if arv==0:
-        nupp=Button(raam, text="Lisa programm", command=lisa_programm, width=25, font=headeri_font, bg=nupu_värv)
-        nupp.grid(column=4, row= 10, columnspan=2, padx=15, pady=5, sticky=(W))
-    else:
-        nupp=Button(raam, text="Eemalda programm", command=eemalda_programm, width=25, font=headeri_font, bg=nupu_värv)
+        try:
+            programmide_listbox.destroy()        #juhuks kui mingi idioot peaks 2 korda samat nuppu vajutama
+            prog_scrollbar.destroy()
+            programmi_sisend.destroy()
+        except:
+            try:
+                programmi_sisend.destroy()
+            except:
+                pass
+        
+        programmide_jutt=ttk.Label(raam, text="Vali eemaldamiseks soovitud programm:", background=tausta_värv, font=headeri_font)
+        programmide_jutt.grid(column=4, columnspan=2, row=8, padx=15, pady=5, sticky=(W))
+        programmide_listbox=Listbox(raam, height=5, width=int(ekraani_laius*0.06*0.7), selectmode="single", background=listi_värv)
+        programmide_listbox.grid(row=9, column=4, padx=15, columnspan=2, sticky=(W))
+        prog_scrollbar=Scrollbar(raam, troughcolor='blue')
+        prog_scrollbar.grid(row=9, column=4, columnspan=2, sticky=(E,N,S))
+        prog_scrollbar.config(command=programmide_listbox.yview)
+        programmide_listbox.config(yscrollcommand=prog_scrollbar.set)
+        programmide_listbox.delete(0,END)
+        for element in saadud_list:
+            programmide_listbox.insert(END, element[0])
+        try:
+            nupp.destroy()
+        except:
+            pass
+        nupp=Button(raam, text="Eemalda programm", command=lambda: eemalda_programm(programmide_listbox.get(ANCHOR)), width=25, font=headeri_font, bg=nupu_värv)
         nupp.grid(column=4, row= 10, columnspan=2, padx=15, pady=5, sticky=(W))
 
 def leia_arv():
@@ -237,18 +391,38 @@ def leia_arv():
         return 1
 
         
-def lisa_programm():  #vajab tegemist
-    a=1
+def lisa_programm(nimi):
+    processes.append([nimi,0])
+    programmi_sisend.delete(0,END)
+    
+    
+def eemalda_programm(nimi):
+    for item in processes:
+        if item[0] == nimi:
+            processes.remove(item)
 
-def eemalda_programm():  #vajab tegemist
-    a=1
 
     
 #siia siis äkki värvid lisada?
-tausta_värv= '#%02x%02x%02x' % (242, 242, 242)
-nupu_värv= '#%02x%02x%02x' % (192, 204, 208)
+tausta_värv= '#%02x%02x%02x' % (200, 250, 200)
+nupu_värv= '#%02x%02x%02x' % (150, 244, 208)
 headeri_teksti_värv='blue'
+listi_värv='#%02x%02x%02x' % (220, 255, 220)
 
+"""
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+_________ _       _________ _       _________ _______  _______         _______  _        ______                  _________
+\__   __/| \    /\\__   __/( (    /|\__   __/(  ____ \(  ____ )       (  ___  )( (    /|(  __  \        |\     /|\__   __/
+   ) (   |  \  / /   ) (   |  \  ( |   ) (   | (    \/| (    )|       | (   ) ||  \  ( || (  \  )       | )   ( |   ) (   
+   | |   |  (_/ /    | |   |   \ | |   | |   | (__    | (____)|       | (___) ||   \ | || |   ) |       | |   | |   | |   
+   | |   |   _ (     | |   | (\ \) |   | |   |  __)   |     __)       |  ___  || (\ \) || |   | |       | |   | |   | |   
+   | |   |  ( \ \    | |   | | \   |   | |   | (      | (\ (          | (   ) || | \   || |   ) |       | |   | |   | |   
+   | |   |  /  \ \___) (___| )  \  |   | |   | (____/\| ) \ \__       | )   ( || )  \  || (__/  )       | (___) |___) (___
+   )_(   |_/    \/\_______/|/    )_)   )_(   (_______/|/   \__/       |/     \||/    )_)(______/        (_______)\_______/
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+"""
 
 raam=Tk()
 raam.configure(bg = tausta_värv)
@@ -267,9 +441,9 @@ raam.bind_all('<1>', hiireklõps)
 töötavate_programmide_header = ttk.Label(raam, text="Töötavate programmide nimekiri",font=headeri_font, background=tausta_värv, foreground=headeri_teksti_värv)
 programmide_aktiivsuse_header = ttk.Label(raam, text="Programmi aktiivsus", font=headeri_font, background=tausta_värv, foreground=headeri_teksti_värv)
 aja_header = ttk.Label(raam, text="Kulunud aeg", font=headeri_font, background=tausta_värv, foreground=headeri_teksti_värv)
-töötavate_programmide_header.grid(column=0, row=0, ipadx=ekraani_laius*0.24*0.7-180, pady=20, sticky=(W), padx=15)
-programmide_aktiivsuse_header.grid(column=1, row=0, ipadx=ekraani_laius*0.17*0.7-115, pady=20, sticky=(W), padx=15)
-aja_header.grid(column=2, row=0, ipadx=ekraani_laius*0.15*0.7-66, pady=20, sticky=(W),padx=15)
+töötavate_programmide_header.grid(column=0, row=0, ipadx=ekraani_laius*0.23*0.7-183, pady=20, sticky=(W), padx=15)
+programmide_aktiivsuse_header.grid(column=1, row=0, ipadx=ekraani_laius*0.15*0.7-120, pady=20, sticky=(W), padx=15)
+aja_header.grid(column=2, row=0, ipadx=ekraani_laius*0.09*0.7-66, pady=20, sticky=(W),padx=15)
 kõikide_aegade_nullimise_nupp = Button(raam, text="Nulli ajad", command=nulli_kõik, width=6, font=headeri_font, bg=nupu_värv)
 kõikide_aegade_nullimise_nupp.grid(column=3, row=0, ipadx=ekraani_laius*0.1*0.7-70, padx=15, pady=20, sticky=(W))
 
@@ -293,43 +467,30 @@ taimeri_eemaldamise_nupp=Button(raam, text="Eemalda taimer", command=eemalda_tai
 taimeri_eemaldamise_nupp.grid(column=5, row=3, pady=5, padx=15, sticky=(W))
 taimeri_tekst=ttk.Label(raam, text="Hetkel töös olevad taimerid:", background=tausta_värv)
 taimeri_tekst.grid(row=5, column=4, columnspan=2, sticky=(W), padx=0)
-taimeri_listbox=Listbox(raam, height=5, width=int(ekraani_laius*0.06*0.7), selectmode="single")
+taimeri_listbox=Listbox(raam, height=5, width=int(ekraani_laius*0.06*0.7), selectmode="single", background=listi_värv)
 taimeri_listbox.grid(row=6, column=4, padx=15, columnspan=2, sticky=(W))
-scrollbar=Scrollbar(raam)
+scrollbar=Scrollbar(raam, background=listi_värv)
 scrollbar.grid(row=6, column=4, columnspan=2, sticky=(E,N,S))
 scrollbar.config(command=taimeri_listbox.yview)
 taimeri_listbox.config(yscrollcommand=scrollbar.set)
 
 #teen programmide lisamiseks ja eemaldamiseks radiobuttonid
 var=IntVar()
-nupp_eemalda=Radiobutton(raam, text="Eemalda programme",value=1, variable=var, command=lambda: radiobutton_job(katse_olemasolev))
+nupp_eemalda=Radiobutton(raam, text="Eemalda programme",value=1, variable=var, command=lambda: radiobutton_job(processes), bg=tausta_värv)
 nupp_eemalda.grid(row=7, column=5, padx=15, pady=5, columnspan=2, sticky=(W))
-nupp_lisa=Radiobutton(raam, text="lisa programme", value=2, variable=var, command=lambda: radiobutton_job(katselist))
+nupp_lisa=Radiobutton(raam, text="Lisa programme", value=2, variable=var, command=lambda: radiobutton_job([]), bg=tausta_värv)
 nupp_lisa.grid(row=7, column=4, padx=15, pady=5, sticky=(W))
-
-
-
-#testiks
-
-# I broke some shit. will fix some time.
-
-shown_processes=[]
-shown_processes_status=[]
-shown_processes_time=[]
-count=0
-for i in backend.processes:
-    count+=1
-    shown_processes[count] = ttk.Label(raam,text=backend.processes[i][0])
-    shown_processes[count].grid(column=0,row=count,padx=20,pady=5,sticky=(W))
-    shown_processes_status[count] = ttk.Label(raam,text=backend.GetProcessStatus(backend.processes[i][0]))
-    shown_processes_status[count].grid(column=1,row=count, pady=5, sticky=(W))
-    shown_processes_time[count] = ttk.Label(raam, text=str(backend.processes[i][1]))
-    shown_processes_time[count].grid(column=2, row=count, pady=5, sticky=(W))
-
 
 stopperi_näidatav_aeg3=ttk.Label(raam, text= "2 tundi, 30 minutit, 25 sekundit.")
 
 nulli=Button(raam, text="Nulli", command=nulli_stopper, width=8, bg=nupu_värv, font=headeri_font)
 nulli.grid(column=3, row=1, pady=5)
 
+LoadFile()
+update_processes()
+
+raam.protocol("WM_DELETE_WINDOW", callback)
+
 raam.mainloop()
+
+
