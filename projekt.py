@@ -324,7 +324,11 @@ taimeri_listbox.config(yscrollcommand=scrollbar.set)
 var=IntVar()
 nupp_eemalda=Radiobutton(raam, text="Eemalda programme",value=1, variable=var, command=lambda: radiobutton_job(backend.processes))
 nupp_eemalda.grid(row=7, column=5, padx=15, pady=5, columnspan=2, sticky=(W))
+<<<<<<< HEAD
 nupp_lisa=Radiobutton(raam, text="lisa programme", value=2, variable=var, command=lambda: radiobutton_job([]))
+=======
+nupp_lisa=Radiobutton(raam, text="Lisa programme", value=2, variable=var, command=lambda: radiobutton_job)
+>>>>>>> origin/master
 nupp_lisa.grid(row=7, column=4, padx=15, pady=5, sticky=(W))
 
 stopperi_näidatav_aeg3=ttk.Label(raam, text= "2 tundi, 30 minutit, 25 sekundit.")
@@ -342,21 +346,34 @@ class BackgroundService (threading.Thread):
 	def run(self):
 		while not self.stopped.wait(1):
 			backend.worker()
+	def stop(self):
+		self.stopped.set()
 
 class Updater (threading.Thread):
-	def __init__(self, threadID, name, counter):
+	def __init__(self, threadID, name, counter, event):
 		threading.Thread.__init__(self)
 		self.threadID = threadID
 		self.name = name
 		self.counter = counter
-		self.stopped = threading.Event()
+		self.stopped = event
 	def run(self):
 		while not self.stopped.wait(0.5):
 			update_processes()
+	def stop(self):
+		self.stopped.set()
 
 thread1 = BackgroundService(1, "Thread-1", 1)
 thread1.start()
-thread2 = Updater(2,"Thread-2",2)
+global thread2, stopFlag
+stopFlag = threading.Event()
+thread2 = Updater(2,"Thread-2",2,stopFlag)
 thread2.start()
+
+def callback():
+	if messagebox.askokcancel("Quit", "Do you really wish to quit?"):
+		raam.destroy()
+		stopFlag.set()
+
+raam.protocol("WM_DELETE_WINDOW", callback)
 
 raam.mainloop()

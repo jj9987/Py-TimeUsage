@@ -2,9 +2,13 @@ import subprocess
 import csv
 import os
 
+global startupinfo
+startupinfo = subprocess.STARTUPINFO()
+startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+
 def worker():
-	i=0
-	p_tasklist = subprocess.Popen('tasklist.exe /fo csv', stdout=subprocess.PIPE, universal_newlines=True, creationflags=0x08000008)
+	i=0	
+	p_tasklist = subprocess.Popen('tasklist.exe /fo csv', stdout=subprocess.PIPE, universal_newlines=True, startupinfo=startupinfo)
 	for p in csv.DictReader(p_tasklist.stdout):
 		if(p['Image Name'] == "chrome.exe"):
 			continue
@@ -43,7 +47,7 @@ def GetProcessTime(processname):
 def GetProcessStatus(processname):
 	p_tasklist = subprocess.Popen('tasklist.exe /fo csv',
                               stdout=subprocess.PIPE,
-                              universal_newlines=True)
+                              universal_newlines=True, startupinfo=startupinfo)
 	for p in csv.DictReader(p_tasklist.stdout):
-		if(p['Image Name'] == processname):	return "Running"
-	return "Not running"
+		if(p['Image Name'] == processname):	return "Töötab"
+	return "Ei tööta"
