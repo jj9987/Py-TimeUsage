@@ -281,15 +281,23 @@ def jälgi_taimerit(aeg,sõnum):
     else:
         pass
 
-def eemalda_taimer(event=0):  
+def eemalda_midagi_boxist(event=0):  
     global töötavad_taimerid
-    sõnum = taimeri_listbox.get(ANCHOR)
+    try:
+        sõnum = taimeri_listbox.get(ANCHOR)
+        eemalda_taimer()
+    except:
+        eemalda_programm(programmide_listbox.get(ANCHOR))
+
+def eemalda_taimer():
+    global töötavad_taimerid
+    sõnum=taimeri_listbox.get(ANCHOR)
     try:
         töötavad_taimerid.remove(sõnum)
     except:
         pass
     taimeri_listbox.delete(ANCHOR)
-
+    
 def taimeri_listboxi_lisamine(list):
     taimeri_listbox.delete(0,END)
     for element in list:
@@ -352,7 +360,7 @@ def radiobutton_job(saadud_list):     #teen progrgrammide loetelusse lisamise ko
         info.grid(column=4, columnspan=2, row=10, rowspan=2, padx=15, pady=5, sticky=(W))        
         programmi_sisend=ttk.Entry(raam, background=tausta_värv, width=int(ekraani_laius*0.059*0.7))
         programmi_sisend.grid(row=11, rowspan=2, column=4, columnspan=2, pady=5, padx=15, sticky=(W))
-        nupp=Button(raam, text="Lisa programm", command=lambda: lisa_programm(programmi_sisend.get()), width=25, font=headeri_font, bg=nupu_värv)
+        nupp=Button(raam, text="Lisa programm", command=lisa_programm, width=25, font=headeri_font, bg=nupu_värv)
         nupp.grid(column=4, row= 12, rowspan=2, columnspan=2, padx=15, pady=5, sticky=(W))
     else:
         try:
@@ -390,10 +398,15 @@ def leia_arv():
         return 1
 
         
-def lisa_programm(nimi):
-    processes.append([nimi,0])
-    programmi_sisend.delete(0,END)
-    
+def lisa_programm(event=0):
+    try:     #juhuks kui keei vajutab enterit lambisel hetkel
+        nimi=programmi_sisend.get()
+        if len(nimi)>0:
+            processes.append([nimi,0])
+            programmi_sisend.delete(0,END)
+    except:
+        pass
+        
     
 def eemalda_programm(nimi):
     for item in processes:
@@ -433,8 +446,9 @@ raam.geometry('%dx%d+%d+%d' % (ekraani_laius, ekraani_kõrgus, 0.15*ekraani_laiu
 headeri_font= font.Font(size=10, weight='bold')
 
 
-raam.bind_all("<Delete>", eemalda_taimer)
+raam.bind_all("<Delete>", eemalda_midagi_boxist)
 raam.bind_all('<1>', hiireklõps)
+raam.bind_all("<Return>", lisa_programm)
 
 
 #Teen kõige ülemise headeri rea:
