@@ -1,8 +1,8 @@
-flux.exe 10
+flux.exe 5
 opera.exe 0
-conhost.exe 10
-svchost.exe 10
-Skype.exe 10
-steam.exe 9
-chrome.exe 9
-sublime_text.exe 9
+conhost.exe 5
+svchost.exe 6
+Skype.exe 6
+steam.exe 6
+chrome.exe 6
+sublime_text.exe 5

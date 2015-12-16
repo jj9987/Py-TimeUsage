@@ -50,8 +50,8 @@ _________ _______  _______           _       _________ _______  _______  _      
 
 def update_processes():
     count=1
-    for i in processes:      
-        Check_Application(i[0])
+    for i in processes:
+        Check_Application(i[0])      
         shown_processes = ttk.Label(raam,text=i[0], background=tausta_värv)
         shown_processes.grid(column=0,row=count,padx=20, pady=5, sticky=(W))
         shown_processes_status = ttk.Label(raam,text=i[2], background=tausta_värv)
@@ -73,7 +73,9 @@ def seconds_conversion(time):
 def Check_Application(filename):
     error="INFO: No tasks are running which match the specified criteria.\n"
     query = """tasklist /FI "IMAGENAME eq """+str(filename)+""" " """
-    #print(query)
+    #query = """New-TimeSpan -Start (get-process """+filename[0:-4]+""").StartTime"""
+    #output=subprocess.call(["C:\\WINDOWS\\system32\\WindowsPowerShell\\v1.0\\powershell.exe", query], stdout=sys.stdout)
+    #print(output)
     p_tasklist = subprocess.Popen(query, stdout=subprocess.PIPE, universal_newlines=True, startupinfo=startupinfo)
     result = p_tasklist.communicate()[0]
     for item in processes:
@@ -136,7 +138,7 @@ class Updater (threading.Thread):
         self.counter = counter
         self.stopped = event
     def run(self):
-        while not self.stopped.wait(0.5):
+        while not self.stopped.wait(0.01):
             update_processes()
     def stop(self):
         self.stopped.set()
