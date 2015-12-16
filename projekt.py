@@ -10,8 +10,7 @@ import ctypes
 
 import backend # janar's work imported
 
-katselist=["mamma", "sai", "tuba", "nuga", "laut", "liha", "tuum"]
-katse_olemasolev=["janar", "juusu", "jannu", "jussu"]                        #ajutised asjad
+katselist=["mamma", "sai", "tuba", "nuga", "laut", "liha", "tuum"]          #ajutised asjad
 
 töötavad_taimerid=[]
 
@@ -225,7 +224,7 @@ def programmide_listboxi_lisamine(list):
     arv=leia_arv()
     programmide_listbox.delete(0,END)
     for element in list:
-        programmide_listbox.insert(END, element)
+        programmide_listbox.insert(END, element[0])
     if arv==0:
         nupp=Button(raam, text="Lisa programm", command=lisa_programm, width=25, font=headeri_font, bg=nupu_värv)
         nupp.grid(column=4, row= 10, columnspan=2, padx=15, pady=5, sticky=(W))
@@ -305,7 +304,7 @@ taimeri_listbox.config(yscrollcommand=scrollbar.set)
 
 #teen programmide lisamiseks ja eemaldamiseks radiobuttonid
 var=IntVar()
-nupp_eemalda=Radiobutton(raam, text="Eemalda programme",value=1, variable=var, command=lambda: radiobutton_job(katse_olemasolev))
+nupp_eemalda=Radiobutton(raam, text="Eemalda programme",value=1, variable=var, command=lambda: radiobutton_job(backend.processes))
 nupp_eemalda.grid(row=7, column=5, padx=15, pady=5, columnspan=2, sticky=(W))
 nupp_lisa=Radiobutton(raam, text="lisa programme", value=2, variable=var, command=lambda: radiobutton_job(katselist))
 nupp_lisa.grid(row=7, column=4, padx=15, pady=5, sticky=(W))
