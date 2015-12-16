@@ -42,7 +42,7 @@ def update_processes():
         Check_Application(i[0])
         shown_processes = ttk.Label(raam,text=i[0], background=tausta_värv)
         shown_processes.grid(column=0,row=count,padx=20, sticky=(W))
-        shown_processes_status = ttk.Label(raam,text=i[2])
+        shown_processes_status = ttk.Label(raam,text=i[2], background=tausta_värv)
         shown_processes_status.grid(column=1,row=count, padx=20, sticky=(W))
         shown_processes_time = ttk.Label(raam, text=seconds_conversion(i[1]), background=tausta_värv)
         shown_processes_time.grid(column=2, row=count, padx=20, sticky=(W))
@@ -372,7 +372,7 @@ programmide_aktiivsuse_header = ttk.Label(raam, text="Programmi aktiivsus", font
 aja_header = ttk.Label(raam, text="Kulunud aeg", font=headeri_font, background=tausta_värv, foreground=headeri_teksti_värv)
 töötavate_programmide_header.grid(column=0, row=0, ipadx=ekraani_laius*0.23*0.7-183, pady=20, sticky=(W), padx=15)
 programmide_aktiivsuse_header.grid(column=1, row=0, ipadx=ekraani_laius*0.15*0.7-120, pady=20, sticky=(W), padx=15)
-aja_header.grid(column=2, row=0, ipadx=ekraani_laius*0.15*0.7-66, pady=20, sticky=(W),padx=15)
+aja_header.grid(column=2, row=0, ipadx=ekraani_laius*0.09*0.7-66, pady=20, sticky=(W),padx=15)
 kõikide_aegade_nullimise_nupp = Button(raam, text="Nulli ajad", command=nulli_kõik, width=6, font=headeri_font, bg=nupu_värv)
 kõikide_aegade_nullimise_nupp.grid(column=3, row=0, ipadx=ekraani_laius*0.1*0.7-70, padx=15, pady=20, sticky=(W))
 
