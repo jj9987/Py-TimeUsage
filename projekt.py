@@ -25,8 +25,10 @@ user32 = ctypes.windll.user32
 ekraani_laius= round(0.72*user32.GetSystemMetrics(0))
 ekraani_kõrgus= round(0.7*user32.GetSystemMetrics(1))
 
-def nulli_kõik():   #vajab täielikku tegemist
-    a=1 #lihtsalt, et siin miadgi oleks hetkel :D
+def nulli_kõik():
+    Delete_Old_Table_Data()
+    for item in processes:
+        item[1] = 0
 
 stopperi_sekundid=0
 stopperi_minutid=0
@@ -48,8 +50,8 @@ _________ _______  _______           _       _________ _______  _______  _      
 
 def update_processes():
     count=1
-    for i in processes:      
-        Check_Application(i[0])
+    for i in processes:
+        Check_Application(i[0])      
         shown_processes = ttk.Label(raam,text=i[0], background=tausta_värv)
         shown_processes.grid(column=0,row=count,padx=20, pady=5, sticky=(W))
         shown_processes_status = ttk.Label(raam,text=i[2], background=tausta_värv)
@@ -71,7 +73,9 @@ def seconds_conversion(time):
 def Check_Application(filename):
     error="INFO: No tasks are running which match the specified criteria.\n"
     query = """tasklist /FI "IMAGENAME eq """+str(filename)+""" " """
-    #print(query)
+    #query = """New-TimeSpan -Start (get-process """+filename[0:-4]+""").StartTime"""
+    #output=subprocess.call(["C:\\WINDOWS\\system32\\WindowsPowerShell\\v1.0\\powershell.exe", query], stdout=sys.stdout)
+    #print(output)
     p_tasklist = subprocess.Popen(query, stdout=subprocess.PIPE, universal_newlines=True, startupinfo=startupinfo)
     result = p_tasklist.communicate()[0]
     for item in processes:
@@ -86,6 +90,23 @@ def Check_Application(filename):
                         item[2] = "Töötab"
             break
     #print(result)
+
+def Delete_Old_Table_Data():    
+    emptylabe1=ttk.Label(raam,text="                              ", background=tausta_värv)
+    emptylabe1.grid(column=0,row=1,padx=20, pady=5, sticky=(W))
+    emptylabe2=ttk.Label(raam,text="                              ", background=tausta_värv)
+    emptylabe2.grid(column=1,row=1,padx=20, pady=5, sticky=(W))
+    emptylabe3=ttk.Label(raam,text="                              ", background=tausta_värv)
+    emptylabe3.grid(column=2,row=1,padx=20, pady=5, sticky=(W))
+    count=2
+    for i in processes:
+        emptylabel1=ttk.Label(raam,text="                              ", background=tausta_värv)
+        emptylabel1.grid(column=0,row=count,padx=20, pady=5, sticky=(W))
+        emptylabel2=ttk.Label(raam,text="                              ", background=tausta_värv)
+        emptylabel2.grid(column=1,row=count,padx=20, pady=5, sticky=(W))
+        emptylabel3=ttk.Label(raam,text="                              ", background=tausta_värv)
+        emptylabel3.grid(column=2,row=count,padx=20, pady=5, sticky=(W))
+        count+=1
 
 def SaveData():
     with open("applications.txt", "w") as f:
@@ -117,7 +138,7 @@ class Updater (threading.Thread):
         self.counter = counter
         self.stopped = event
     def run(self):
-        while not self.stopped.wait(0.5):
+        while not self.stopped.wait(0.01):
             update_processes()
     def stop(self):
         self.stopped.set()
@@ -398,6 +419,7 @@ def leia_arv():
         return 1
 
         
+<<<<<<< HEAD
 def lisa_programm(event=0):
     try:     #juhuks kui keei vajutab enterit lambisel hetkel
         nimi=programmi_sisend.get()
@@ -407,11 +429,19 @@ def lisa_programm(event=0):
     except:
         pass
         
+=======
+def lisa_programm(nimi):
+    processes.append([nimi,0])
+    programmi_sisend.delete(0,END)
+    Delete_Old_Table_Data()
+    
+>>>>>>> origin/master
     
 def eemalda_programm(nimi):
     for item in processes:
         if item[0] == nimi:
             processes.remove(item)
+            Delete_Old_Table_Data()
             break
 
 
