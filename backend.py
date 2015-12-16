@@ -1,4 +1,3 @@
-import threading
 import subprocess
 import csv
 import os
