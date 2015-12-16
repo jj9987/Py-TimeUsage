@@ -16,7 +16,7 @@ def worker():
 			with open("applications.txt", "w") as f:
 				for item in processes:
 					f.write(item[0]+" "+str(item[1])+"\n")
-	print(processes)
+	#print(processes)
 	i+=1
 
 global processes
