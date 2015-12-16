@@ -6,47 +6,59 @@ global startupinfo
 startupinfo = subprocess.STARTUPINFO()
 startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
 
-def worker():
-	i=0	
-	p_tasklist = subprocess.Popen('tasklist.exe /fo csv', stdout=subprocess.PIPE, universal_newlines=True, startupinfo=startupinfo)
-	for p in csv.DictReader(p_tasklist.stdout):
-		if(p['Image Name'] == "chrome.exe" or p['Image Name'] == "opera.exe"):
-			continue
+def Check_Application(filename):
+	error="INFO: No tasks are running which match the specified criteria.\n"
+	query = """tasklist /FI "IMAGENAME eq """+filename
+	#print(query)
+	p_tasklist = subprocess.Popen(query, stdout=subprocess.PIPE, universal_newlines=True, startupinfo=startupinfo)
+	result = p_tasklist.communicate()[0]
+	if(result == error): 
 		for item in processes:
-			if(item[0] == p['Image Name']):
-				item[1] += 1
-				continue
-		if(i==300): # updates file after every 5 minutes
-			with open("applications.txt", "w") as f:
-				for item in processes:
-					f.write(item[0]+" "+str(item[1])+"\n")
-	i+=1
+			if(item[0] == filename):
+				item[2] = 0
+				break
+	else:
+		for item in processes:
+			item[2] = 0 # set running status to 0, will be set to 1 if found later ;)
+			if(item[0] == filename):
+				item[1] +=1
+				item[2] = 1
+				break
+	#print(result)
 
 global processes
 processes=[]
 
 # opens the file for saving data, creates if can not open
-if(os.path.isfile("applications.txt")):
+if(not os.path.isfile("applications.txt")):
+	fail=open("applications.txt",'w')
+	fail.close()
+else:
 	with open("applications.txt") as f:
 		for line in f:
 			line=line.split()
-			processes.append([line[0],int(line[1])])
+			processes.append([line[0],int(line[1]),0])
 
 
-def AddNewApplication(processname):
-	processes.append([processname,0])
-	return True
-
+Check_Application("chrome.exe")
 def GetProcessTime(processname):
 	for item in processes:
 		if(item[0] == processname):
 			return item[1]
-	return "Process not found"
+			break
+	return "ERROR"
 
 def GetProcessStatus(processname):
-	p_tasklist = subprocess.Popen('tasklist.exe /fo csv',
-                              stdout=subprocess.PIPE,
-                              universal_newlines=True, startupinfo=startupinfo)
-	for p in csv.DictReader(p_tasklist.stdout):
-		if(p['Image Name'] == processname):	return "Töötab"
+	for item in processes:
+		if(item[0] == processname):
+			if(item[2] == 1): 
+				break
+				return "Töötab"
 	return "Ei tööta"
+
+def SaveData():
+	with open("applications.txt", "w") as f:
+		for item in processes:
+			f.write(item[0]+" "+str(item[1])+"\n")
+
+

@@ -33,7 +33,11 @@ def update_processes():
 	for i in backend.processes:
 		shown_processes = ttk.Label(raam,text=i[0], background=tausta_värv)
 		shown_processes.grid(column=0,row=count,padx=20, sticky=(W))
+<<<<<<< HEAD
 		shown_processes_status = ttk.Label(raam,text=backend.GetProcessStatus(i[0]), background=tausta_värv)
+=======
+		shown_processes_status = ttk.Label(raam,text=backend.i[2])
+>>>>>>> origin/master
 		shown_processes_status.grid(column=1,row=count, padx=20, sticky=(W))
 		shown_processes_time = ttk.Label(raam, text=seconds_conversion(i[1]), background=tausta_värv)
 		shown_processes_time.grid(column=2, row=count, padx=20, sticky=(W))
@@ -41,12 +45,12 @@ def update_processes():
 
 def seconds_conversion(time):
 	minutes=int(time/60)
-	if(minutes > 60):
-		hours = int(minutes/60)
-		minutes = minutes - hours*60
-		result = str(hours) + " tundi " + str(minutes) + " minutit " + str(time%60) + " sekundit "
-	elif(time < 60): result = str(time) + " sekundit " # less than 60 seconds
-	elif(time > 60 and time < 3600): result = str(minutes) + " minutit " + str(time%60) + " sekundit "
+    if(minutes >= 60):
+        hours = int(minutes/60)
+        minutes = minutes - hours*60
+        result = str(hours) + " tundi " + str(minutes) + " minutit " + str(time%60) + " sekundit "
+    elif(time < 60): result = str(time) + " sekundit " # less than 60 seconds
+    elif(time >= 60 and time < 3600): result = str(minutes) + " minutit " + str(time%60) + " sekundit "
 	return result
 
 def stopperi_tiksumine():
@@ -392,16 +396,17 @@ class Updater (threading.Thread):
 		self.stopped.set()
 
 thread1 = BackgroundService(1, "Thread-1", 1)
-thread1.start()
+#thread1.start()
 global thread2, stopFlag
 stopFlag = threading.Event()
 thread2 = Updater(2,"Thread-2",2,stopFlag)
-thread2.start()
+#thread2.start()
 
 def callback():
-	if messagebox.askokcancel("Quit", "Do you really wish to quit?"):
-		raam.destroy()
-		stopFlag.set()
+    if messagebox.askokcancel("Quit", "Do you really wish to quit?"):
+        raam.destroy()
+        backend.SaveData()
+        stopFlag.set()
 
 raam.protocol("WM_DELETE_WINDOW", callback)
 
