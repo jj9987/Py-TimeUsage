@@ -8,7 +8,6 @@ except ImportError: #Python 2
     from Tkinter import messagebox
 import ctypes
 import subprocess
-import csv
 import os
 import threading
 from time import sleep
@@ -32,9 +31,6 @@ def nulli_kõik():   #vajab täielikku tegemist
 stopperi_sekundid=0
 stopperi_minutid=0
 stopperi_tunnid=0
-
-def lel(string):
-    return string
 
 """
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -111,7 +107,7 @@ def LoadFile():
 def callback(): # callback when closing application from X
     if messagebox.askokcancel("Välju", "Kas sa soovid programmi sulgeda?"):
         raam.destroy()
-        #SaveData()
+        SaveData()
         stopFlag.set()
 
 class Updater (threading.Thread):
@@ -130,7 +126,7 @@ class Updater (threading.Thread):
 global thread1, stopFlag
 stopFlag = threading.Event()
 thread1 = Updater(1,"Thread-1",1,stopFlag)
-#thread2.start()
+thread1.start()
 
 """
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
