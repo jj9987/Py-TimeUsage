@@ -36,6 +36,20 @@ stopperi_tunnid=0
 def lel(string):
     return string
 
+"""
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+_________ _______  _______           _       _________ _______  _______  _               _______ _________          _______  _______ 
+\__   __/(  ____ \(  ____ \|\     /|( (    /|\__   __/(  ____ \(  ___  )( \             (  ____ \\__   __/|\     /|(  ____ \(  ____ \
+   ) (   | (    \/| (    \/| )   ( ||  \  ( |   ) (   | (    \/| (   ) || (             | (    \/   ) (   | )   ( || (    \/| (    \/
+   | |   | (__    | |      | (___) ||   \ | |   | |   | |      | (___) || |             | (_____    | |   | |   | || (__    | (__    
+   | |   |  __)   | |      |  ___  || (\ \) |   | |   | |      |  ___  || |             (_____  )   | |   | |   | ||  __)   |  __)   
+   | |   | (      | |      | (   ) || | \   |   | |   | |      | (   ) || |                   ) |   | |   | |   | || (      | (      
+   | |   | (____/\| (____/\| )   ( || )  \  |___) (___| (____/\| )   ( || (____/\       /\____) |   | |   | (___) || )      | )      
+   )_(   (_______/(_______/|/     \||/    )_)\_______/(_______/|/     \|(_______/       \_______)   )_(   (_______)|/       |/       
+                                                                                                                                
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+"""
+
 def update_processes():
     count=1
     for i in processes:      
@@ -71,7 +85,7 @@ def Check_Application(filename):
                 break
     else:
         for item in processes:
-            item[2] = 0 # set running status to 0, will be set to 1 if found later ;)
+            item[2] = "Ei tööta" # set running status to 0, will be set to 1 if found later ;)
             if(item[0] == filename):
                 item[1] +=1
                 item[2] = "Töötab"
@@ -84,7 +98,7 @@ def SaveData():
             f.write(item[0]+" "+str(item[1])+"\n")
 
 def LoadFile():
-    """# opens the file for saving data, creates if can not open
+    # opens the file for saving data, creates if can not open
     if(not os.path.isfile("applications.txt")):
         fail=open("applications.txt",'w')
         fail.close()
@@ -92,12 +106,45 @@ def LoadFile():
         with open("applications.txt") as f:
             for line in f:
                 line=line.split()
-                processes.append([line[0],int(line[1]),0])
-                print("success")"""
-    with open("applications.txt") as f:
-        for line in f:
-            line=line.split()
-            processes.append([line[0],int(line[1]),0])
+                processes.append([line[0],int(line[1]),"Ei tööta"])
+
+def callback(): # callback when closing application from X
+    if messagebox.askokcancel("Välju", "Kas sa soovid programmi sulgeda?"):
+        raam.destroy()
+        #SaveData()
+        stopFlag.set()
+
+class Updater (threading.Thread):
+    def __init__(self, threadID, name, counter, event):
+        threading.Thread.__init__(self)
+        self.threadID = threadID
+        self.name = name
+        self.counter = counter
+        self.stopped = event
+    def run(self):
+        while not self.stopped.wait(0.5):
+            update_processes()
+    def stop(self):
+        self.stopped.set()
+
+global thread1, stopFlag
+stopFlag = threading.Event()
+thread1 = Updater(1,"Thread-1",1,stopFlag)
+#thread2.start()
+
+"""
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+ _______ _________ _______  _______  _______  _______  _______       _______ _________          _______  _______ 
+(  ____ \\__   __/(  ___  )(  ____ )(  ____ )(  ____ \(  ____ )     (  ____ \\__   __/|\     /|(  ____ \(  ____ \
+| (    \/   ) (   | (   ) || (    )|| (    )|| (    \/| (    )|     | (    \/   ) (   | )   ( || (    \/| (    \/
+| (_____    | |   | |   | || (____)|| (____)|| (__    | (____)|     | (_____    | |   | |   | || (__    | (__    
+(_____  )   | |   | |   | ||  _____)|  _____)|  __)   |     __)     (_____  )   | |   | |   | ||  __)   |  __)   
+      ) |   | |   | |   | || (      | (      | (      | (\ (              ) |   | |   | |   | || (      | (      
+/\____) |   | |   | (___) || )      | )      | (____/\| ) \ \__     /\____) |   | |   | (___) || )      | )      
+\_______)   )_(   (_______)|/       |/       (_______/|/   \__/     \_______)   )_(   (_______)|/       |/       
+                                                                                                              
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+"""
 
 def stopperi_tiksumine():
     global stopperi_sekundid, stopperi_näidatav_aeg, tiksumise_id, stopperi_minutid, stopperi_tunnid
@@ -149,6 +196,20 @@ def nulli_stopper():
         stopperi_näidatav_aeg.destroy()
     except: 
         pass
+
+"""
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+_________ _______ _________ _______  _______  _______         _______ _________          _______  _______ 
+\__   __/(  ___  )\__   __/(       )(  ____ \(  ____ )       (  ____ \\__   __/|\     /|(  ____ \(  ____ \
+   ) (   | (   ) |   ) (   | () () || (    \/| (    )|       | (    \/   ) (   | )   ( || (    \/| (    \/
+   | |   | (___) |   | |   | || || || (__    | (____)|       | (_____    | |   | |   | || (__    | (__    
+   | |   |  ___  |   | |   | |(_)| ||  __)   |     __)       (_____  )   | |   | |   | ||  __)   |  __)   
+   | |   | (   ) |   | |   | |   | || (      | (\ (                ) |   | |   | |   | || (      | (      
+   | |   | )   ( |___) (___| )   ( || (____/\| ) \ \__       /\____) |   | |   | (___) || )      | )      
+   )_(   |/     \|\_______/|/     \|(_______/|/   \__/       \_______)   )_(   (_______)|/       |/       
+                                                                                                     
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+"""
 
 def käivita_taimer():
     global lisaaken, tundide_sisestus_taimerisse, minutite_sisestus_taimerisse, sekundite_sisestus_taimerisse, teadaanne
@@ -352,6 +413,20 @@ nupu_värv= '#%02x%02x%02x' % (150, 244, 208)
 headeri_teksti_värv='blue'
 listi_värv='#%02x%02x%02x' % (220, 255, 220)
 
+"""
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+_________ _       _________ _       _________ _______  _______         _______  _        ______                  _________
+\__   __/| \    /\\__   __/( (    /|\__   __/(  ____ \(  ____ )       (  ___  )( (    /|(  __  \        |\     /|\__   __/
+   ) (   |  \  / /   ) (   |  \  ( |   ) (   | (    \/| (    )|       | (   ) ||  \  ( || (  \  )       | )   ( |   ) (   
+   | |   |  (_/ /    | |   |   \ | |   | |   | (__    | (____)|       | (___) ||   \ | || |   ) |       | |   | |   | |   
+   | |   |   _ (     | |   | (\ \) |   | |   |  __)   |     __)       |  ___  || (\ \) || |   | |       | |   | |   | |   
+   | |   |  ( \ \    | |   | | \   |   | |   | (      | (\ (          | (   ) || | \   || |   ) |       | |   | |   | |   
+   | |   |  /  \ \___) (___| )  \  |   | |   | (____/\| ) \ \__       | )   ( || )  \  || (__/  )       | (___) |___) (___
+   )_(   |_/    \/\_______/|/    )_)   )_(   (_______/|/   \__/       |/     \||/    )_)(______/        (_______)\_______/
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+"""
 
 raam=Tk()
 raam.configure(bg = tausta_värv)
@@ -415,38 +490,11 @@ stopperi_näidatav_aeg3=ttk.Label(raam, text= "2 tundi, 30 minutit, 25 sekundit.
 nulli=Button(raam, text="Nulli", command=nulli_stopper, width=8, bg=nupu_värv, font=headeri_font)
 nulli.grid(column=3, row=1, pady=5)
 
-class Updater (threading.Thread):
-    def __init__(self, threadID, name, counter, event):
-        threading.Thread.__init__(self)
-        self.threadID = threadID
-        self.name = name
-        self.counter = counter
-        self.stopped = event
-    def run(self):
-        while not self.stopped.wait(0.5):
-            update_processes()
-    def stop(self):
-        self.stopped.set()
-
-global thread1, stopFlag
-stopFlag = threading.Event()
-thread1 = Updater(1,"Thread-1",1,stopFlag)
-#thread2.start()
-
 LoadFile()
-Check_Application("chrome.exe")
 update_processes()
-
-def callback(): # callback when closing application from X
-    if messagebox.askokcancel("Välju", "Kas sa soovid programmi sulgeda?"):
-        raam.destroy()
-        #SaveData()
-        stopFlag.set()
-
 
 raam.protocol("WM_DELETE_WINDOW", callback)
 
 raam.mainloop()
 
 
-#SaveData()
