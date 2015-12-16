@@ -25,6 +25,33 @@ stopperi_sekundid=0
 stopperi_minutid=0
 stopperi_tunnid=0
 
+class BackgroundService (threading.Thread):
+	def __init__(self, threadID, name, counter):
+		threading.Thread.__init__(self)
+		self.threadID = threadID
+		self.name = name
+		self.counter = counter
+	def run(self):
+		print("Starting background service" + self.name)
+		worker()
+		print("Exiting " + self.name)
+class Updater (threading.Thread):
+	def __init__(self, threadID, name, counter):
+		threading.Thread.__init__(self)
+		self.threadID = threadID
+		self.name = name
+		self.counter = counter
+	def run(self):
+		print("Starting background service" + self.name)
+		update_processes()
+		print("Exiting " + self.name)
+
+
+thread1 = BackgroundService(1, "Thread-1", 1)
+thread1.start()
+thread2 = Updater(1,"Thread-2",1)
+thread2.start()
+
 def stopperi_tiksumine():
     global stopperi_sekundid, stopperi_näidatav_aeg, tiksumise_id, stopperi_minutid, stopperi_tunnid
     stopperi_sekundid+=1
@@ -310,19 +337,18 @@ nupp_lisa=Radiobutton(raam, text="lisa programme", value=2, variable=var, comman
 nupp_lisa.grid(row=7, column=4, padx=15, pady=5, sticky=(W))
 
 
-
-#testiks
-
-# I broke some shit. will fix some time.
-count=1
-for i in backend.processes:
-	shown_processes = ttk.Label(raam,text=i[0])
-	shown_processes.grid(column=0,row=count,padx=20,pady=5,sticky=(W))
-	shown_processes_status = ttk.Label(raam,text=backend.GetProcessStatus(i[0]))
-	shown_processes_status.grid(column=1,row=count, padx=20, pady=5, sticky=(W))
-	shown_processes_time = ttk.Label(raam, text=i[1])
-	shown_processes_time.grid(column=2, row=count, padx=20, pady=5, sticky=(W))
-	count+=1
+def update_processes():
+	while True:
+		count=1
+		for i in backend.processes:
+			shown_processes = ttk.Label(raam,text=i[0])
+			shown_processes.grid(column=0,row=count,padx=20,pady=5,sticky=(W))
+			shown_processes_status = ttk.Label(raam,text=backend.GetProcessStatus(i[0]))
+			shown_processes_status.grid(column=1,row=count, padx=20, pady=5, sticky=(W))
+			shown_processes_time = ttk.Label(raam, text=i[1])
+			shown_processes_time.grid(column=2, row=count, padx=20, pady=5, sticky=(W))
+			count+=1
+		sleep(1)
 
 
 stopperi_näidatav_aeg3=ttk.Label(raam, text= "2 tundi, 30 minutit, 25 sekundit.")
