@@ -1,18 +1,28 @@
-import _thread
+import threading
 import subprocess
 import csv
 import os
 from time import sleep
 
-def worker(threadname):
+
+class myThread (threading.Thread):
+	def __init__(self, threadID, name, counter):
+		threading.Thread.__init__(self)
+		self.threadID = threadID
+		self.name = name
+		self.counter = counter
+	def run(self):
+		print("Starting background service" + self.name)
+		worker()
+		print("Exiting " + self.name)
+def worker():
 	print("hol")
 	i=0
 	while(True):
 		i+=1
 		p_tasklist = subprocess.Popen('tasklist.exe /fo csv',
-                              stdout=subprocess.PIPE,
-                              universal_newlines=True)
-
+           	                  stdout=subprocess.PIPE,
+               	              universal_newlines=True)
 		for p in csv.DictReader(p_tasklist.stdout):
 			if(p['Image Name'] == "chrome.exe"):
 				continue
@@ -20,14 +30,12 @@ def worker(threadname):
 				if(item[0] == p['Image Name']):
 					item[1] += 1
 					continue
-
-		if(i==300): # updates file after every 5 minutes
-			with open("applications.txt", "w") as f:
-				for item in processes:
-					f.write(item[0]+" "+str(item[1])+"\n")
-
-	print(threadname,",",processes)
-	sleep(1)
+			if(i==300): # updates file after every 5 minutes
+				with open("applications.txt", "w") as f:
+					for item in processes:
+						f.write(item[0]+" "+str(item[1])+"\n")
+		print(processes)
+		sleep(1)
 
 global processes
 processes=[]
@@ -40,7 +48,9 @@ if(os.path.isfile("applications.txt")):
 			processes.append([line[0],int(line[1])])
 
 
-_thread.start_new_thread(worker, ("one", ))
+# Create new threads
+thread1 = myThread(1, "Thread-1", 1)
+thread1.start()
 
 def AddNewApplication(processname):
 	processes.append([processname,0])
