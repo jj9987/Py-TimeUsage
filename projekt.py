@@ -7,11 +7,19 @@ except ImportError: #Python 2
     from Tkinter import ttk, font
     from Tkinter import messagebox
 import ctypes
-
-import backend
+import subprocess
+import csv
+import os
 import threading
 from time import sleep
 
+
+global startupinfo
+startupinfo = subprocess.STARTUPINFO()
+startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+
+global processes
+processes=[]
 töötavad_taimerid=[]
 
 user32 = ctypes.windll.user32
@@ -26,22 +34,19 @@ stopperi_minutid=0
 stopperi_tunnid=0
 
 def lel(string):
-	return string
+    return string
 
 def update_processes():
-	count=1
-	for i in backend.processes:
-		shown_processes = ttk.Label(raam,text=i[0], background=tausta_värv)
-		shown_processes.grid(column=0,row=count,padx=20, sticky=(W))
-<<<<<<< HEAD
-		shown_processes_status = ttk.Label(raam,text=backend.GetProcessStatus(i[0]), background=tausta_värv)
-=======
-		shown_processes_status = ttk.Label(raam,text=backend.i[2])
->>>>>>> origin/master
-		shown_processes_status.grid(column=1,row=count, padx=20, sticky=(W))
-		shown_processes_time = ttk.Label(raam, text=seconds_conversion(i[1]), background=tausta_värv)
-		shown_processes_time.grid(column=2, row=count, padx=20, sticky=(W))
-		count+=1
+    count=1
+    for i in processes:      
+        Check_Application(i[0])
+        shown_processes = ttk.Label(raam,text=i[0], background=tausta_värv)
+        shown_processes.grid(column=0,row=count,padx=20, sticky=(W))
+        shown_processes_status = ttk.Label(raam,text=i[2])
+        shown_processes_status.grid(column=1,row=count, padx=20, sticky=(W))
+        shown_processes_time = ttk.Label(raam, text=seconds_conversion(i[1]), background=tausta_värv)
+        shown_processes_time.grid(column=2, row=count, padx=20, sticky=(W))
+        count+=1
 
 def seconds_conversion(time):
     minutes=int(time/60)
@@ -52,6 +57,47 @@ def seconds_conversion(time):
     elif(time < 60): result = str(time) + " sekundit " # less than 60 seconds
     elif(time >= 60 and time < 3600): result = str(minutes) + " minutit " + str(time%60) + " sekundit "
     return result
+
+def Check_Application(filename):
+    error="INFO: No tasks are running which match the specified criteria.\n"
+    query = """tasklist /FI "IMAGENAME eq """+str(filename)+""" " """
+    #print(query)
+    p_tasklist = subprocess.Popen(query, stdout=subprocess.PIPE, universal_newlines=True, startupinfo=startupinfo)
+    result = p_tasklist.communicate()[0]
+    if(result == error): 
+        for item in processes:
+            if(item[0] == filename):
+                item[2] = "Ei tööta"
+                break
+    else:
+        for item in processes:
+            item[2] = 0 # set running status to 0, will be set to 1 if found later ;)
+            if(item[0] == filename):
+                item[1] +=1
+                item[2] = "Töötab"
+                break
+    #print(result)
+
+def SaveData():
+    with open("applications.txt", "w") as f:
+        for item in processes:
+            f.write(item[0]+" "+str(item[1])+"\n")
+
+def LoadFile():
+    """# opens the file for saving data, creates if can not open
+    if(not os.path.isfile("applications.txt")):
+        fail=open("applications.txt",'w')
+        fail.close()
+    else:
+        with open("applications.txt") as f:
+            for line in f:
+                line=line.split()
+                processes.append([line[0],int(line[1]),0])
+                print("success")"""
+    with open("applications.txt") as f:
+        for line in f:
+            line=line.split()
+            processes.append([line[0],int(line[1]),0])
 
 def stopperi_tiksumine():
     global stopperi_sekundid, stopperi_näidatav_aeg, tiksumise_id, stopperi_minutid, stopperi_tunnid
@@ -100,9 +146,9 @@ def nulli_stopper():
     stopperi_minutid=0
     stopperi_tunnid=0
     try: 
-    	stopperi_näidatav_aeg.destroy()
+        stopperi_näidatav_aeg.destroy()
     except: 
-    	pass
+        pass
 
 def käivita_taimer():
     global lisaaken, tundide_sisestus_taimerisse, minutite_sisestus_taimerisse, sekundite_sisestus_taimerisse, teadaanne
@@ -289,14 +335,14 @@ def leia_arv():
 
         
 def lisa_programm(nimi):
-    backend.processes.append([nimi,0])
+    processes.append([nimi,0])
     programmi_sisend.delete(0,END)
     
     
 def eemalda_programm(nimi):
-    for item in backend.processes:
+    for item in processes:
         if item[0] == nimi:
-            backend.processes.remove(item)
+            processes.remove(item)
 
 
     
@@ -359,7 +405,7 @@ taimeri_listbox.config(yscrollcommand=scrollbar.set)
 
 #teen programmide lisamiseks ja eemaldamiseks radiobuttonid
 var=IntVar()
-nupp_eemalda=Radiobutton(raam, text="Eemalda programme",value=1, variable=var, command=lambda: radiobutton_job(backend.processes), bg=tausta_värv)
+nupp_eemalda=Radiobutton(raam, text="Eemalda programme",value=1, variable=var, command=lambda: radiobutton_job(processes), bg=tausta_värv)
 nupp_eemalda.grid(row=7, column=5, padx=15, pady=5, columnspan=2, sticky=(W))
 nupp_lisa=Radiobutton(raam, text="Lisa programme", value=2, variable=var, command=lambda: radiobutton_job([]), bg=tausta_värv)
 nupp_lisa.grid(row=7, column=4, padx=15, pady=5, sticky=(W))
@@ -370,29 +416,37 @@ nulli=Button(raam, text="Nulli", command=nulli_stopper, width=8, bg=nupu_värv, 
 nulli.grid(column=3, row=1, pady=5)
 
 class Updater (threading.Thread):
-	def __init__(self, threadID, name, counter, event):
-		threading.Thread.__init__(self)
-		self.threadID = threadID
-		self.name = name
-		self.counter = counter
-		self.stopped = event
-	def run(self):
-		while not self.stopped.wait(0.5):
-			update_processes()
-	def stop(self):
-		self.stopped.set()
+    def __init__(self, threadID, name, counter, event):
+        threading.Thread.__init__(self)
+        self.threadID = threadID
+        self.name = name
+        self.counter = counter
+        self.stopped = event
+    def run(self):
+        while not self.stopped.wait(0.5):
+            update_processes()
+    def stop(self):
+        self.stopped.set()
 
 global thread1, stopFlag
 stopFlag = threading.Event()
 thread1 = Updater(1,"Thread-1",1,stopFlag)
 #thread2.start()
 
+LoadFile()
+Check_Application("chrome.exe")
+update_processes()
+
 def callback(): # callback when closing application from X
     if messagebox.askokcancel("Välju", "Kas sa soovid programmi sulgeda?"):
         raam.destroy()
-        backend.SaveData()
+        #SaveData()
         stopFlag.set()
+
 
 raam.protocol("WM_DELETE_WINDOW", callback)
 
 raam.mainloop()
+
+
+#SaveData()
