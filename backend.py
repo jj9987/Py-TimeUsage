@@ -32,11 +32,6 @@ if(os.path.isfile("applications.txt")):
 			line=line.split()
 			processes.append([line[0],int(line[1])])
 
-
-def AddNewApplication(processname):
-	processes.append([processname,0])
-	return True
-
 def GetProcessTime(processname):
 	for item in processes:
 		if(item[0] == processname):
