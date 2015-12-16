@@ -209,8 +209,8 @@ def hiireklõps(event=0):
     except:
         pass
 
-def radiobutton_job(list):     #teen progrgrammide loetelusse lisamise koha
-    global programmide_jutt, programmide_listbox, after_id
+def radiobutton_job(saadud_list):     #teen progrgrammide loetelusse lisamise koha
+    global programmide_jutt, programmide_listbox, after_id, prog_scrollbar
     arv=leia_arv()
     try:
         raam.after_cancel(after_id)    #juhuks kui after pole veel välja kutsutud
@@ -219,12 +219,24 @@ def radiobutton_job(list):     #teen progrgrammide loetelusse lisamise koha
     try:                              #et boldis tekst tuleks korralikult
         programmide_jutt.destroy()
     except:
-        pass
-            
+        pass     
     if arv==0:
+        try:
+            programmide_listbox.destroy()        #juhuks kui esimene radiobutton on programmide lisamine
+            prog_scrollbar.destroy()
+        except:
+            pass
         programmide_jutt=ttk.Label(raam, text="Lisa jälgimiseks soovitud programm:", background=tausta_värv, font=headeri_font)
+        programmide_jutt.grid(column=4, columnspan=2, row=8, padx=15, pady=5, sticky=(W))
+        nupp=Button(raam, text="Lisa programm", command=lisa_programm, width=25, font=headeri_font, bg=nupu_värv)
+        nupp.grid(column=4, row= 10, columnspan=2, padx=15, pady=5, sticky=(W))
     else:
-        programmide_jutt=ttk.Label(raam, text="Vali eemaldamiseks soovitud programm:", background=tausta_värv, font=headeri_font) 
+        try:
+            programmide_listbox.destroy()        #juhuks kui mingi idioot peaks 2 korda samat nuppu vajutama
+            prog_scrollbar.destroy()
+        except:
+            pass
+        programmide_jutt=ttk.Label(raam, text="Vali eemaldamiseks soovitud programm:", background=tausta_värv, font=headeri_font)
         programmide_jutt.grid(column=4, columnspan=2, row=8, padx=15, pady=5, sticky=(W))
         programmide_listbox=Listbox(raam, height=5, width=int(ekraani_laius*0.06*0.7), selectmode="single")
         programmide_listbox.grid(row=9, column=4, padx=15, columnspan=2, sticky=(W))
@@ -232,17 +244,9 @@ def radiobutton_job(list):     #teen progrgrammide loetelusse lisamise koha
         prog_scrollbar.grid(row=9, column=4, columnspan=2, sticky=(E,N,S))
         prog_scrollbar.config(command=programmide_listbox.yview)
         programmide_listbox.config(yscrollcommand=prog_scrollbar.set)
-        programmide_listboxi_lisamine(list)
-
-def programmide_listboxi_lisamine(list):
-    arv=leia_arv()
-    programmide_listbox.delete(0,END)
-    for element in list:
-        programmide_listbox.insert(END, element[0])
-    if arv==0:
-        nupp=Button(raam, text="Lisa programm", command=lisa_programm, width=25, font=headeri_font, bg=nupu_värv)
-        nupp.grid(column=4, row= 10, columnspan=2, padx=15, pady=5, sticky=(W))
-    else:
+        programmide_listbox.delete(0,END)
+        for element in list:
+            programmide_listbox.insert(END, element[0])
         nupp=Button(raam, text="Eemalda programm", command=eemalda_programm, width=25, font=headeri_font, bg=nupu_värv)
         nupp.grid(column=4, row= 10, columnspan=2, padx=15, pady=5, sticky=(W))
 
@@ -320,7 +324,7 @@ taimeri_listbox.config(yscrollcommand=scrollbar.set)
 var=IntVar()
 nupp_eemalda=Radiobutton(raam, text="Eemalda programme",value=1, variable=var, command=lambda: radiobutton_job(backend.processes))
 nupp_eemalda.grid(row=7, column=5, padx=15, pady=5, columnspan=2, sticky=(W))
-nupp_lisa=Radiobutton(raam, text="lisa programme", value=2, variable=var, command=lambda: radiobutton_job)
+nupp_lisa=Radiobutton(raam, text="lisa programme", value=2, variable=var, command=lambda: radiobutton_job([]))
 nupp_lisa.grid(row=7, column=4, padx=15, pady=5, sticky=(W))
 
 stopperi_näidatav_aeg3=ttk.Label(raam, text= "2 tundi, 30 minutit, 25 sekundit.")
