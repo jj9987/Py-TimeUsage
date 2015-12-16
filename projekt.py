@@ -31,11 +31,11 @@ def lel(string):
 def update_processes():
 	count=1
 	for i in backend.processes:
-		shown_processes = ttk.Label(raam,text=i[0])
+		shown_processes = ttk.Label(raam,text=i[0], background=tausta_värv)
 		shown_processes.grid(column=0,row=count,padx=20, sticky=(W))
-		shown_processes_status = ttk.Label(raam,text=backend.GetProcessStatus(i[0]))
+		shown_processes_status = ttk.Label(raam,text=backend.GetProcessStatus(i[0]), background=tausta_värv)
 		shown_processes_status.grid(column=1,row=count, padx=20, sticky=(W))
-		shown_processes_time = ttk.Label(raam, text=seconds_conversion(i[1]))
+		shown_processes_time = ttk.Label(raam, text=seconds_conversion(i[1]), background=tausta_värv)
 		shown_processes_time.grid(column=2, row=count, padx=20, sticky=(W))
 		count+=1
 
@@ -244,7 +244,7 @@ def radiobutton_job(saadud_list):     #teen progrgrammide loetelusse lisamise ko
         programmide_jutt.grid(column=4, columnspan=2, row=8, padx=15, pady=5, sticky=(W))
         info=ttk.Label(raam, text="Siia tuleks lisada exe faili nimi soovitavast failist:", background=tausta_värv)
         info.grid(column=4, columnspan=2, row=9, padx=15, pady=5, sticky=(W))        
-        programmi_sisend=ttk.Entry(raam, width=int(ekraani_laius*0.059*0.7))
+        programmi_sisend=ttk.Entry(raam, background=tausta_värv, width=int(ekraani_laius*0.059*0.7))
         programmi_sisend.grid(row=10, column=4, columnspan=2, pady=5, padx=15, sticky=(W))
         nupp=Button(raam, text="Lisa programm", command=lambda: lisa_programm(programmi_sisend.get()), width=25, font=headeri_font, bg=nupu_värv)
         nupp.grid(column=4, row= 11, columnspan=2, padx=15, pady=5, sticky=(W))
@@ -261,9 +261,9 @@ def radiobutton_job(saadud_list):     #teen progrgrammide loetelusse lisamise ko
         
         programmide_jutt=ttk.Label(raam, text="Vali eemaldamiseks soovitud programm:", background=tausta_värv, font=headeri_font)
         programmide_jutt.grid(column=4, columnspan=2, row=8, padx=15, pady=5, sticky=(W))
-        programmide_listbox=Listbox(raam, height=5, width=int(ekraani_laius*0.06*0.7), selectmode="single")
+        programmide_listbox=Listbox(raam, height=5, width=int(ekraani_laius*0.06*0.7), selectmode="single", background=listi_värv)
         programmide_listbox.grid(row=9, column=4, padx=15, columnspan=2, sticky=(W))
-        prog_scrollbar=Scrollbar(raam)
+        prog_scrollbar=Scrollbar(raam, troughcolor='blue')
         prog_scrollbar.grid(row=9, column=4, columnspan=2, sticky=(E,N,S))
         prog_scrollbar.config(command=programmide_listbox.yview)
         programmide_listbox.config(yscrollcommand=prog_scrollbar.set)
@@ -297,9 +297,10 @@ def eemalda_programm(nimi):
 
     
 #siia siis äkki värvid lisada?
-tausta_värv= '#%02x%02x%02x' % (5, 242, 242)
-nupu_värv= '#%02x%02x%02x' % (192, 204, 208)
+tausta_värv= '#%02x%02x%02x' % (200, 250, 200)
+nupu_värv= '#%02x%02x%02x' % (150, 244, 208)
 headeri_teksti_värv='blue'
+listi_värv='#%02x%02x%02x' % (220, 255, 220)
 
 
 raam=Tk()
@@ -345,9 +346,9 @@ taimeri_eemaldamise_nupp=Button(raam, text="Eemalda taimer", command=eemalda_tai
 taimeri_eemaldamise_nupp.grid(column=5, row=3, pady=5, padx=15, sticky=(W))
 taimeri_tekst=ttk.Label(raam, text="Hetkel töös olevad taimerid:", background=tausta_värv)
 taimeri_tekst.grid(row=5, column=4, columnspan=2, sticky=(W), padx=0)
-taimeri_listbox=Listbox(raam, height=5, width=int(ekraani_laius*0.06*0.7), selectmode="single")
+taimeri_listbox=Listbox(raam, height=5, width=int(ekraani_laius*0.06*0.7), selectmode="single", background=listi_värv)
 taimeri_listbox.grid(row=6, column=4, padx=15, columnspan=2, sticky=(W))
-scrollbar=Scrollbar(raam)
+scrollbar=Scrollbar(raam, background=listi_värv)
 scrollbar.grid(row=6, column=4, columnspan=2, sticky=(E,N,S))
 scrollbar.config(command=taimeri_listbox.yview)
 taimeri_listbox.config(yscrollcommand=scrollbar.set)
