@@ -417,25 +417,21 @@ def leia_arv():
         return 0
     elif var.get()==1:
         return 1
-
-        
-<<<<<<< HEAD
+       
 def lisa_programm(event=0):
     try:     #juhuks kui keei vajutab enterit lambisel hetkel
         nimi=programmi_sisend.get()
         if len(nimi)>0:
             processes.append([nimi,0])
             programmi_sisend.delete(0,END)
+            Delete_Old_Table_Data()
     except:
         pass
         
-=======
-def lisa_programm(nimi):
-    processes.append([nimi,0])
-    programmi_sisend.delete(0,END)
-    Delete_Old_Table_Data()
-    
->>>>>>> origin/master
+#def lisa_programm(nimi):
+#    processes.append([nimi,0])
+#    programmi_sisend.delete(0,END)
+#    Delete_Old_Table_Data()
     
 def eemalda_programm(nimi):
     for item in processes:
