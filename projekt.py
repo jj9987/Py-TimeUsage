@@ -28,17 +28,15 @@ stopperi_minutid=0
 stopperi_tunnid=0
 
 def update_processes():
-	while True:
-		count=1
-		for i in backend.processes:
-			shown_processes = ttk.Label(raam,text=i[0])
-			shown_processes.grid(column=0,row=count,padx=20,pady=5,sticky=(W))
-			shown_processes_status = ttk.Label(raam,text=backend.GetProcessStatus(i[0]))
-			shown_processes_status.grid(column=1,row=count, padx=20, pady=5, sticky=(W))
-			shown_processes_time = ttk.Label(raam, text=i[1])
-			shown_processes_time.grid(column=2, row=count, padx=20, pady=5, sticky=(W))
-			count+=1
-		sleep(1)
+	count=1
+	for i in backend.processes:
+		shown_processes = ttk.Label(raam,text=i[0])
+		shown_processes.grid(column=0,row=count,padx=20,pady=5,sticky=(W))
+		shown_processes_status = ttk.Label(raam,text=backend.GetProcessStatus(i[0]))
+		shown_processes_status.grid(column=1,row=count, padx=20, pady=5, sticky=(W))
+		shown_processes_time = ttk.Label(raam, text=i[1])
+		shown_processes_time.grid(column=2, row=count, padx=20, pady=5, sticky=(W))
+		count+=1
 
 
 def stopperi_tiksumine():
@@ -337,9 +335,8 @@ class BackgroundService (threading.Thread):
 		self.name = name
 		self.counter = counter
 	def run(self):
-		print("Starting background service" + self.name)
-		backend.worker()
-		print("Exiting " + self.name)
+		while not self.stopped.wait(1):
+			backend.worker()
 class Updater (threading.Thread):
 	def __init__(self, threadID, name, counter):
 		threading.Thread.__init__(self)
@@ -347,9 +344,8 @@ class Updater (threading.Thread):
 		self.name = name
 		self.counter = counter
 	def run(self):
-		print("Starting background service" + self.name)
-		update_processes()
-		print("Exiting " + self.name)
+		while not self.stopped.wait(0.5):
+			update_processes()
 
 
 thread1 = BackgroundService(1, "Thread-1", 1)
