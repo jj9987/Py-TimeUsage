@@ -324,11 +324,7 @@ taimeri_listbox.config(yscrollcommand=scrollbar.set)
 var=IntVar()
 nupp_eemalda=Radiobutton(raam, text="Eemalda programme",value=1, variable=var, command=lambda: radiobutton_job(backend.processes))
 nupp_eemalda.grid(row=7, column=5, padx=15, pady=5, columnspan=2, sticky=(W))
-<<<<<<< HEAD
-nupp_lisa=Radiobutton(raam, text="lisa programme", value=2, variable=var, command=lambda: radiobutton_job([]))
-=======
-nupp_lisa=Radiobutton(raam, text="Lisa programme", value=2, variable=var, command=lambda: radiobutton_job)
->>>>>>> origin/master
+nupp_lisa=Radiobutton(raam, text="Lisa programme", value=2, variable=var, command=lambda: radiobutton_job([]))
 nupp_lisa.grid(row=7, column=4, padx=15, pady=5, sticky=(W))
 
 stopperi_näidatav_aeg3=ttk.Label(raam, text= "2 tundi, 30 minutit, 25 sekundit.")
