@@ -312,19 +312,18 @@ nupp_lisa.grid(row=7, column=4, padx=15, pady=5, sticky=(W))
 #testiks
 
 # I broke some shit. will fix some time.
-
+"""
 shown_processes=[]
 shown_processes_status=[]
 shown_processes_time=[]
-count=0
 for i in backend.processes:
-    count+=1
-    shown_processes[count] = ttk.Label(raam,text=backend.processes[i][0])
-    shown_processes[count].grid(column=0,row=count,padx=20,pady=5,sticky=(W))
-    shown_processes_status[count] = ttk.Label(raam,text=backend.GetProcessStatus(backend.processes[i][0]))
-    shown_processes_status[count].grid(column=1,row=count, pady=5, sticky=(W))
-    shown_processes_time[count] = ttk.Label(raam, text=str(backend.processes[i][1]))
-    shown_processes_time[count].grid(column=2, row=count, pady=5, sticky=(W))
+    process_name=
+    shown_processes[i] = ttk.Label(raam,text=backend.GetProcessName(processes[i][0]))
+    shown_processes[i].grid(column=0,row=i,padx=20,pady=5,sticky=(W))
+    shown_processes_status[i] = ttk.Label(raam,text=backend.GetProcessStatus(backend.processes[i][0]))
+    shown_processes_status[i].grid(column=1,row=i, pady=5, sticky=(W))
+    shown_processes_time[i] = ttk.Label(raam, text=str(backend.processes[i][1]))
+    shown_processes_time[i].grid(column=2, row=i, pady=5, sticky=(W))"""
 
 
 stopperi_näidatav_aeg3=ttk.Label(raam, text= "2 tundi, 30 minutit, 25 sekundit.")

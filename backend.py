@@ -1,10 +1,36 @@
+import multiprocessing
 import subprocess
 import csv
 import os
 from time import sleep
 
+def worker():
+	print("hol")
+	i=0
+	while(True):
+		i+=1
+		p_tasklist = subprocess.Popen('tasklist.exe /fo csv',
+                              stdout=subprocess.PIPE,
+                              universal_newlines=True)
+
+		for p in csv.DictReader(p_tasklist.stdout):
+			if(p['Image Name'] == "chrome.exe"):
+				continue
+			for item in processes:
+				if(item[0] == p['Image Name']):
+					item[1] += 1
+					continue
+
+		if(i==300): # updates file after every 5 minutes
+			with open("applications.txt", "w") as f:
+				for item in processes:
+					f.write(item[0]+" "+str(item[1])+"\n")
+
+	print(processes)
+	sleep(1)
+
+global processes
 processes=[]
-all_ok=False
 
 # opens the file for saving data, creates if can not open
 if(os.path.isfile("applications.txt")):
@@ -12,6 +38,11 @@ if(os.path.isfile("applications.txt")):
 		for line in f:
 			line=line.split()
 			processes.append([line[0],int(line[1])])
+
+
+if __name__ == '__main__':
+	counter = multiprocessing.Process(target=worker)
+	counter.start()
 
 def AddNewApplication(processname):
 	processes.append([processname,0])
@@ -30,28 +61,3 @@ def GetProcessStatus(processname):
 	for p in csv.DictReader(p_tasklist.stdout):
 		if(p['Image Name'] == processname):	return "Running"
 	return "Not running"
-
-
-i=0
-
-while(all_ok == True):
-	i+=1
-	p_tasklist = subprocess.Popen('tasklist.exe /fo csv',
-                              stdout=subprocess.PIPE,
-                              universal_newlines=True)
-
-	for p in csv.DictReader(p_tasklist.stdout):
-		if(p['Image Name'] == "chrome.exe"):
-			continue
-		for item in processes:
-			if(item[0] == p['Image Name']):
-				item[1] += 1
-				continue
-
-	if(i==300): # updates file after every 5 minutes
-		with open("applications.txt", "w") as f:
-			for item in processes:
-				f.write(item[0]+" "+str(item[1])+"\n")
-
-	print(processes)
-	sleep(1)
