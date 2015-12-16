@@ -15,7 +15,7 @@ from time import sleep
 töötavad_taimerid=[]
 
 user32 = ctypes.windll.user32
-ekraani_laius= round(0.7*user32.GetSystemMetrics(0))
+ekraani_laius= round(0.72*user32.GetSystemMetrics(0))
 ekraani_kõrgus= round(0.7*user32.GetSystemMetrics(1))
 
 def nulli_kõik():   #vajab täielikku tegemist
@@ -319,8 +319,8 @@ raam.bind_all('<1>', hiireklõps)
 töötavate_programmide_header = ttk.Label(raam, text="Töötavate programmide nimekiri",font=headeri_font, background=tausta_värv, foreground=headeri_teksti_värv)
 programmide_aktiivsuse_header = ttk.Label(raam, text="Programmi aktiivsus", font=headeri_font, background=tausta_värv, foreground=headeri_teksti_värv)
 aja_header = ttk.Label(raam, text="Kulunud aeg", font=headeri_font, background=tausta_värv, foreground=headeri_teksti_värv)
-töötavate_programmide_header.grid(column=0, row=0, ipadx=ekraani_laius*0.24*0.7-180, pady=20, sticky=(W), padx=15)
-programmide_aktiivsuse_header.grid(column=1, row=0, ipadx=ekraani_laius*0.17*0.7-115, pady=20, sticky=(W), padx=15)
+töötavate_programmide_header.grid(column=0, row=0, ipadx=ekraani_laius*0.23*0.7-183, pady=20, sticky=(W), padx=15)
+programmide_aktiivsuse_header.grid(column=1, row=0, ipadx=ekraani_laius*0.15*0.7-120, pady=20, sticky=(W), padx=15)
 aja_header.grid(column=2, row=0, ipadx=ekraani_laius*0.15*0.7-66, pady=20, sticky=(W),padx=15)
 kõikide_aegade_nullimise_nupp = Button(raam, text="Nulli ajad", command=nulli_kõik, width=6, font=headeri_font, bg=nupu_värv)
 kõikide_aegade_nullimise_nupp.grid(column=3, row=0, ipadx=ekraani_laius*0.1*0.7-70, padx=15, pady=20, sticky=(W))
