@@ -428,18 +428,15 @@ def lisa_programm(event=0):
     except:
         pass
         
-<<<<<<< HEAD
 def lisa_programm(nimi):
     processes.append([nimi,0,"Ei tööta"])
     programmi_sisend.delete(0,END)
     Delete_Old_Table_Data()
     
-=======
 #def lisa_programm(nimi):
 #    processes.append([nimi,0])
 #    programmi_sisend.delete(0,END)
 #    Delete_Old_Table_Data()
->>>>>>> origin/master
     
 def eemalda_programm(nimi):
     for item in processes:
