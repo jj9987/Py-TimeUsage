@@ -45,5 +45,5 @@ def GetProcessStatus(processname):
                               stdout=subprocess.PIPE,
                               universal_newlines=True)
 	for p in csv.DictReader(p_tasklist.stdout):
-		if(p['Image Name'] == processname):	return "Running"
-	return "Not running"
+		if(p['Image Name'] == processname):	return "Töötab"
+	return "Ei tööta"
