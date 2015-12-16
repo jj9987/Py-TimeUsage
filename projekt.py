@@ -12,8 +12,6 @@ import backend
 import threading
 from time import sleep
 
-katselist=["mamma", "sai", "tuba", "nuga", "laut", "liha", "tuum"] # ajutised asjad
-
 töötavad_taimerid=[]
 
 user32 = ctypes.windll.user32
@@ -292,11 +290,10 @@ def lisa_programm(nimi):
     
     
 def eemalda_programm(nimi):
-    print(nimi)
     for item in backend.processes:
         if item[0] == nimi:
             backend.processes.remove(item)
-    print(backend.processes)
+
 
     
 #siia siis äkki värvid lisada?

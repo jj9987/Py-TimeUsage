@@ -7,5 +7,5 @@ conhost.exe 90000
 winlogon.exe 3194
 svchost.exe 455555555
 telegram.exe 40000
-skype.exe 1337
+Skype.exe 1337
 steam.exe 50000
