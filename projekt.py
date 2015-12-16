@@ -51,11 +51,11 @@ def update_processes():
     for i in processes:      
         Check_Application(i[0])
         shown_processes = ttk.Label(raam,text=i[0], background=tausta_värv)
-        shown_processes.grid(column=0,row=count,padx=20, sticky=(W))
+        shown_processes.grid(column=0,row=count,padx=20, pady=5, sticky=(W))
         shown_processes_status = ttk.Label(raam,text=i[2], background=tausta_värv)
-        shown_processes_status.grid(column=1,row=count, padx=20, sticky=(W))
+        shown_processes_status.grid(column=1,row=count, padx=20, pady=5, sticky=(W))
         shown_processes_time = ttk.Label(raam, text=seconds_conversion(i[1]), background=tausta_värv)
-        shown_processes_time.grid(column=2, row=count, padx=20, sticky=(W))
+        shown_processes_time.grid(column=2, row=count, padx=20, pady=5, sticky=(W))
         count+=1
 
 def seconds_conversion(time):
@@ -347,13 +347,13 @@ def radiobutton_job(saadud_list):     #teen progrgrammide loetelusse lisamise ko
             except:
                 pass
         programmide_jutt=ttk.Label(raam, text="Lisa jälgimiseks soovitud programm:", background=tausta_värv, font=headeri_font)
-        programmide_jutt.grid(column=4, columnspan=2, row=8, padx=15, pady=5, sticky=(W))
+        programmide_jutt.grid(column=4, columnspan=2, row=9, rowspan=2, padx=15, sticky=(W))
         info=ttk.Label(raam, text="Siia tuleks lisada exe faili nimi soovitavast failist:", background=tausta_värv)
-        info.grid(column=4, columnspan=2, row=9, padx=15, pady=5, sticky=(W))        
+        info.grid(column=4, columnspan=2, row=10, rowspan=2, padx=15, pady=5, sticky=(W))        
         programmi_sisend=ttk.Entry(raam, background=tausta_värv, width=int(ekraani_laius*0.059*0.7))
-        programmi_sisend.grid(row=10, column=4, columnspan=2, pady=5, padx=15, sticky=(W))
+        programmi_sisend.grid(row=11, rowspan=2, column=4, columnspan=2, pady=5, padx=15, sticky=(W))
         nupp=Button(raam, text="Lisa programm", command=lambda: lisa_programm(programmi_sisend.get()), width=25, font=headeri_font, bg=nupu_värv)
-        nupp.grid(column=4, row= 11, columnspan=2, padx=15, pady=5, sticky=(W))
+        nupp.grid(column=4, row= 12, rowspan=2, columnspan=2, padx=15, pady=5, sticky=(W))
     else:
         try:
             programmide_listbox.destroy()        #juhuks kui mingi idioot peaks 2 korda samat nuppu vajutama
@@ -366,11 +366,11 @@ def radiobutton_job(saadud_list):     #teen progrgrammide loetelusse lisamise ko
                 pass
         
         programmide_jutt=ttk.Label(raam, text="Vali eemaldamiseks soovitud programm:", background=tausta_värv, font=headeri_font)
-        programmide_jutt.grid(column=4, columnspan=2, row=8, padx=15, pady=5, sticky=(W))
+        programmide_jutt.grid(column=4, columnspan=2, row=9, rowspan=2, padx=15, pady=5, sticky=(W))
         programmide_listbox=Listbox(raam, height=5, width=int(ekraani_laius*0.06*0.7), selectmode="single", background=listi_värv)
-        programmide_listbox.grid(row=9, column=4, padx=15, columnspan=2, sticky=(W))
+        programmide_listbox.grid(row=10, rowspan=4, column=4, padx=15, columnspan=2, sticky=(W))
         prog_scrollbar=Scrollbar(raam, troughcolor='blue')
-        prog_scrollbar.grid(row=9, column=4, columnspan=2, sticky=(E,N,S))
+        prog_scrollbar.grid(row=10, rowspan=4, column=4, pady=16, columnspan=2, sticky=(E,N,S))
         prog_scrollbar.config(command=programmide_listbox.yview)
         programmide_listbox.config(yscrollcommand=prog_scrollbar.set)
         programmide_listbox.delete(0,END)
@@ -381,7 +381,7 @@ def radiobutton_job(saadud_list):     #teen progrgrammide loetelusse lisamise ko
         except:
             pass
         nupp=Button(raam, text="Eemalda programm", command=lambda: eemalda_programm(programmide_listbox.get(ANCHOR)), width=25, font=headeri_font, bg=nupu_värv)
-        nupp.grid(column=4, row= 10, columnspan=2, padx=15, pady=5, sticky=(W))
+        nupp.grid(column=4, row= 13, rowspan=2, columnspan=2, padx=15, pady=5, sticky=(W))
 
 def leia_arv():
     if var.get()==2:
@@ -462,24 +462,24 @@ stopperi_nullimise_nupp.grid(column=5, row=0, pady=5, sticky=(W), padx=15)
 
 #teen taimeri
 taimeri_lisamise_nupp=Button(raam, text="Lisa taimer", command=käivita_taimer, width=12, bg=nupu_värv, font=headeri_font)
-taimeri_lisamise_nupp.grid(column=4, row=3, pady=5, padx=15, sticky=(W))
+taimeri_lisamise_nupp.grid(column=4, row=2, rowspan=2, pady=5, padx=15, sticky=(W))
 taimeri_eemaldamise_nupp=Button(raam, text="Eemalda taimer", command=eemalda_taimer, width=13, bg=nupu_värv, font=headeri_font)
-taimeri_eemaldamise_nupp.grid(column=5, row=3, pady=5, padx=15, sticky=(W))
+taimeri_eemaldamise_nupp.grid(column=5, row=2, pady=5, rowspan=2, padx=15, sticky=(W))
 taimeri_tekst=ttk.Label(raam, text="Hetkel töös olevad taimerid:", background=tausta_värv)
-taimeri_tekst.grid(row=5, column=4, columnspan=2, sticky=(W), padx=0)
+taimeri_tekst.grid(row=4, column=4, columnspan=2, sticky=(W), padx=0)
 taimeri_listbox=Listbox(raam, height=5, width=int(ekraani_laius*0.06*0.7), selectmode="single", background=listi_värv)
-taimeri_listbox.grid(row=6, column=4, padx=15, columnspan=2, sticky=(W))
+taimeri_listbox.grid(row=5, column=4, padx=15, columnspan=2, rowspan=3, sticky=(W))
 scrollbar=Scrollbar(raam, background=listi_värv)
-scrollbar.grid(row=6, column=4, columnspan=2, sticky=(E,N,S))
+scrollbar.grid(row=5, column=4, columnspan=2, rowspan=3, sticky=(E,N,S))
 scrollbar.config(command=taimeri_listbox.yview)
 taimeri_listbox.config(yscrollcommand=scrollbar.set)
 
 #teen programmide lisamiseks ja eemaldamiseks radiobuttonid
 var=IntVar()
 nupp_eemalda=Radiobutton(raam, text="Eemalda programme",value=1, variable=var, command=lambda: radiobutton_job(processes), bg=tausta_värv)
-nupp_eemalda.grid(row=7, column=5, padx=15, pady=5, columnspan=2, sticky=(W))
+nupp_eemalda.grid(row=8, column=5, padx=15, columnspan=2, sticky=(W))
 nupp_lisa=Radiobutton(raam, text="Lisa programme", value=2, variable=var, command=lambda: radiobutton_job([]), bg=tausta_värv)
-nupp_lisa.grid(row=7, column=4, padx=15, pady=5, sticky=(W))
+nupp_lisa.grid(row=8, column=4, padx=15, pady=2, sticky=(W))
 
 stopperi_näidatav_aeg3=ttk.Label(raam, text= "2 tundi, 30 minutit, 25 sekundit.")
 
