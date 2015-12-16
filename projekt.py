@@ -332,24 +332,11 @@ def hiireklõps(event=0):
     if taimeri_listbox.curselection()==viimati_klickitud_taimeri_koht:
         taimeri_listbox.selection_clear(0,len(töötavad_taimerid)) # selleks, et highlightimine kohe kaoks
         raam.after(300,taimeri_listboxi_lisamine,töötavad_taimerid)  #selleks, et ma saaksin taimeri listist asju eemaldada
-    else:
-        kontrollarv=1
     viimati_klickitud_taimeri_koht=taimeri_listbox.curselection()
 
     try:            #juhuks kui programmide listoxi pole loodud
-        #print(programmide_listbox.curselection()==viimati_klickitud_programmi_koht)
         if programmide_listbox.curselection()==viimati_klickitud_programmi_koht:
-            if len(katselist)>len(katse_olemasolev):
-                pikkus=len(katselist)
-            else:
-                pikkus=len(katse_olemasolev)
-            programmide_listbox.selection_clear(0, pikkus) # selleks, et highlightimine kohe kaoks
-            arv=leia_arv()
-            if arv==0:
-                lisatav_list=katselist
-            else:
-                lisatav_list=katse_olemasolev
-            after_id=raam.after(300,programmide_listboxi_lisamine, lisatav_list)  #selleks, et ma saaksin  normaalselt taimeri listist asju eemaldada
+            programmide_listbox.selection_clear(0, len(processes)) # selleks, et highlightimine kohe kaoks
         viimati_klickitud_programmi_koht=programmide_listbox.curselection()    
     except:
         pass
@@ -428,11 +415,7 @@ def lisa_programm(event=0):
     except:
         pass
         
-#def lisa_programm(nimi):
-#    processes.append([nimi,0])
-#    programmi_sisend.delete(0,END)
-#    Delete_Old_Table_Data()
-    
+
 def eemalda_programm(nimi):
     for item in processes:
         if item[0] == nimi:
