@@ -74,18 +74,17 @@ def Check_Application(filename):
     #print(query)
     p_tasklist = subprocess.Popen(query, stdout=subprocess.PIPE, universal_newlines=True, startupinfo=startupinfo)
     result = p_tasklist.communicate()[0]
-    if(result == error): 
-        for item in processes:
-            if(item[0] == filename):
-                item[2] = "Ei tööta"
-                break
-    else:
-        for item in processes:
-            item[2] = "Ei tööta" # set running status to 0, will be set to 1 if found later ;)
-            if(item[0] == filename):
-                item[1] +=1
-                item[2] = "Töötab"
-                break
+    for item in processes:
+        if(item[0] == filename):
+            if(result == error): 
+                item.insert(2, "Ei tööta")
+            else:
+                for item in processes:
+                    item.insert(2,"Ei tööta")
+                    if(item[0] == filename):
+                        item[1] +=1
+                        item[2] = "Töötab"
+            break
     #print(result)
 
 def SaveData():
@@ -400,6 +399,7 @@ def eemalda_programm(nimi):
     for item in processes:
         if item[0] == nimi:
             processes.remove(item)
+            break
 
 
     
