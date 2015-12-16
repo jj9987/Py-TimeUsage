@@ -12,7 +12,7 @@ import backend
 import threading
 from time import sleep
 
-katselist=["mamma", "sai", "tuba", "nuga", "laut", "liha", "tuum"]          #ajutised asjad
+katselist=["mamma", "sai", "tuba", "nuga", "laut", "liha", "tuum"] # ajutised asjad
 
 töötavad_taimerid=[]
 
@@ -27,17 +27,29 @@ stopperi_sekundid=0
 stopperi_minutid=0
 stopperi_tunnid=0
 
+def lel(string):
+	return string
+
 def update_processes():
 	count=1
 	for i in backend.processes:
 		shown_processes = ttk.Label(raam,text=i[0])
-		shown_processes.grid(column=0,row=count,padx=20,pady=5,sticky=(W))
+		shown_processes.grid(column=0,row=count,padx=20, sticky=(W))
 		shown_processes_status = ttk.Label(raam,text=backend.GetProcessStatus(i[0]))
-		shown_processes_status.grid(column=1,row=count, padx=20, pady=5, sticky=(W))
-		shown_processes_time = ttk.Label(raam, text=i[1])
-		shown_processes_time.grid(column=2, row=count, padx=20, pady=5, sticky=(W))
+		shown_processes_status.grid(column=1,row=count, padx=20, sticky=(W))
+		shown_processes_time = ttk.Label(raam, text=seconds_conversion(i[1]))
+		shown_processes_time.grid(column=2, row=count, padx=20, sticky=(W))
 		count+=1
 
+def seconds_conversion(time):
+	minutes=int(time/60)
+	if(minutes > 60):
+		hours = int(minutes/60)
+		minutes = minutes - hours*60
+		result = str(hours) + " tundi " + str(minutes) + " minutit " + str(time%60) + " sekundit "
+	elif(time < 60): result = str(time) + " sekundit " # less than 60 seconds
+	elif(time > 60 and time < 3600): result = str(minutes) + " minutit " + str(time%60) + " sekundit "
+	return result
 
 def stopperi_tiksumine():
     global stopperi_sekundid, stopperi_näidatav_aeg, tiksumise_id, stopperi_minutid, stopperi_tunnid

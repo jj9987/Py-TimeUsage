@@ -10,7 +10,7 @@ def worker():
 	i=0	
 	p_tasklist = subprocess.Popen('tasklist.exe /fo csv', stdout=subprocess.PIPE, universal_newlines=True, startupinfo=startupinfo)
 	for p in csv.DictReader(p_tasklist.stdout):
-		if(p['Image Name'] == "chrome.exe"):
+		if(p['Image Name'] == "chrome.exe" or p['Image Name'] == "opera.exe"):
 			continue
 		for item in processes:
 			if(item[0] == p['Image Name']):
@@ -20,7 +20,6 @@ def worker():
 			with open("applications.txt", "w") as f:
 				for item in processes:
 					f.write(item[0]+" "+str(item[1])+"\n")
-	#print(processes)
 	i+=1
 
 global processes
