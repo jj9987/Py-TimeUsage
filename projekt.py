@@ -71,7 +71,10 @@ def nulli_stopper():
     stopperi_sekundid=0
     stopperi_minutid=0
     stopperi_tunnid=0
-    stopperi_näidatav_aeg.destroy()
+    try: 
+    	stopperi_näidatav_aeg.destroy()
+    except: 
+    	pass
 
 def käivita_taimer():
     global lisaaken, tundide_sisestus_taimerisse, minutite_sisestus_taimerisse, sekundite_sisestus_taimerisse, teadaanne
@@ -311,19 +314,15 @@ nupp_lisa.grid(row=7, column=4, padx=15, pady=5, sticky=(W))
 #testiks
 
 # I broke some shit. will fix some time.
-
-shown_processes=[]
-shown_processes_status=[]
-shown_processes_time=[]
-count=0
+count=1
 for i in backend.processes:
-    count+=1
-    shown_processes[count] = ttk.Label(raam,text=backend.processes[i][0])
-    shown_processes[count].grid(column=0,row=count,padx=20,pady=5,sticky=(W))
-    shown_processes_status[count] = ttk.Label(raam,text=backend.GetProcessStatus(backend.processes[i][0]))
-    shown_processes_status[count].grid(column=1,row=count, pady=5, sticky=(W))
-    shown_processes_time[count] = ttk.Label(raam, text=str(backend.processes[i][1]))
-    shown_processes_time[count].grid(column=2, row=count, pady=5, sticky=(W))
+	shown_processes = ttk.Label(raam,text=i[0])
+	shown_processes.grid(column=0,row=count,padx=20,pady=5,sticky=(W))
+	shown_processes_status = ttk.Label(raam,text=backend.GetProcessStatus(i[0]))
+	shown_processes_status.grid(column=1,row=count, padx=20, pady=5, sticky=(W))
+	shown_processes_time = ttk.Label(raam, text=i[1])
+	shown_processes_time.grid(column=2, row=count, padx=20, pady=5, sticky=(W))
+	count+=1
 
 
 stopperi_näidatav_aeg3=ttk.Label(raam, text= "2 tundi, 30 minutit, 25 sekundit.")

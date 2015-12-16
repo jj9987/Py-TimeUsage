@@ -1,10 +1,10 @@
-import multiprocessing
+import _thread
 import subprocess
 import csv
 import os
 from time import sleep
 
-def worker():
+def worker(threadname):
 	print("hol")
 	i=0
 	while(True):
@@ -26,7 +26,7 @@ def worker():
 				for item in processes:
 					f.write(item[0]+" "+str(item[1])+"\n")
 
-	print(processes)
+	print(threadname,",",processes)
 	sleep(1)
 
 global processes
@@ -40,9 +40,7 @@ if(os.path.isfile("applications.txt")):
 			processes.append([line[0],int(line[1])])
 
 
-if __name__ == '__main__':
-	counter = multiprocessing.Process(target=worker)
-	counter.start()
+_thread.start_new_thread(worker, ("one", ))
 
 def AddNewApplication(processname):
 	processes.append([processname,0])
