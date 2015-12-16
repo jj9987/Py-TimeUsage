@@ -1,29 +1,23 @@
 import subprocess
 import csv
 import os
-from time import sleep
 
 def worker():
-	print("hol")
 	i=0
-	while(True):
-		p_tasklist = subprocess.Popen('tasklist.exe /fo csv',
-           	                  stdout=subprocess.PIPE,
-               	              universal_newlines=True, creationflags=0x08000000)
-		for p in csv.DictReader(p_tasklist.stdout):
-			if(p['Image Name'] == "chrome.exe"):
+	p_tasklist = subprocess.Popen('tasklist.exe /fo csv', stdout=subprocess.PIPE, universal_newlines=True, creationflags=0x08000000)
+	for p in csv.DictReader(p_tasklist.stdout):
+		if(p['Image Name'] == "chrome.exe"):
+			continue
+		for item in processes:
+			if(item[0] == p['Image Name']):
+				item[1] += 1
 				continue
-			for item in processes:
-				if(item[0] == p['Image Name']):
-					item[1] += 1
-					continue
-			if(i==300): # updates file after every 5 minutes
-				with open("applications.txt", "w") as f:
-					for item in processes:
-						f.write(item[0]+" "+str(item[1])+"\n")
-		print(processes)
-		sleep(1)
-		i+=1
+		if(i==300): # updates file after every 5 minutes
+			with open("applications.txt", "w") as f:
+				for item in processes:
+					f.write(item[0]+" "+str(item[1])+"\n")
+	print(processes)
+	i+=1
 
 global processes
 processes=[]
