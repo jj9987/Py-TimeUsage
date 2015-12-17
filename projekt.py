@@ -339,20 +339,19 @@ def hiireklõps(event=0):
     try:            #juhuks kui programmide listoxi pole loodud
         if programmide_listbox.curselection()==viimati_klickitud_programmi_koht:
             programmide_listbox.selection_clear(0, len(processes)) # selleks, et highlightimine kohe kaoks
-            print("l")
-            raam.after(300,programmide_listoxi_värskendus)
-            print("koht")
+            raam.after(300, programmide_listboxi_värskendus)
         viimati_klickitud_programmi_koht=programmide_listbox.curselection()
     except:
-        print("m")
         pass
-    raam.after(300,programmide_listboxi_värskendus)
+
 
 def programmide_listboxi_värskendus():
-    programmide_listbox.delete(0,END)
-    print(processes)
-    for element in processes:
-        programmide_listbox.insert(END, element[0])
+    try:
+        programmide_listbox.delete(0,END)
+        for element in processes:
+            programmide_listbox.insert(END, element[0])
+    except:
+        pass
     
 def radiobutton_job(saadud_list):     #teen progrgrammide loetelusse lisamise koha
     global programmide_jutt, programmide_listbox, after_id, prog_scrollbar, nupp, programmi_sisend
