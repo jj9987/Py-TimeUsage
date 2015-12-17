@@ -96,7 +96,7 @@ def Delete_Old_Table_Data():
     emptylabe1.grid(column=0,row=1,padx=20, pady=5, sticky=(W))
     emptylabe2=ttk.Label(raam,text="                              ", background=tausta_värv)
     emptylabe2.grid(column=1,row=1,padx=20, pady=5, sticky=(W))
-    emptylabe3=ttk.Label(raam,text="                              ", background=tausta_värv)
+    emptylabe3=ttk.Label(raam,text="                                        ", background=tausta_värv)
     emptylabe3.grid(column=2,row=1,padx=20, pady=5, sticky=(W))
     count=2
     for i in processes:
@@ -104,7 +104,7 @@ def Delete_Old_Table_Data():
         emptylabel1.grid(column=0,row=count,padx=20, pady=5, sticky=(W))
         emptylabel2=ttk.Label(raam,text="                              ", background=tausta_värv)
         emptylabel2.grid(column=1,row=count,padx=20, pady=5, sticky=(W))
-        emptylabel3=ttk.Label(raam,text="                              ", background=tausta_värv)
+        emptylabel3=ttk.Label(raam,text="                                        ", background=tausta_värv)
         emptylabel3.grid(column=2,row=count,padx=20, pady=5, sticky=(W))
         count+=1
 
