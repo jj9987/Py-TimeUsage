@@ -339,10 +339,21 @@ def hiireklõps(event=0):
     try:            #juhuks kui programmide listoxi pole loodud
         if programmide_listbox.curselection()==viimati_klickitud_programmi_koht:
             programmide_listbox.selection_clear(0, len(processes)) # selleks, et highlightimine kohe kaoks
-        viimati_klickitud_programmi_koht=programmide_listbox.curselection()    
+            print("l")
+            raam.after(300,programmide_listoxi_värskendus)
+            print("koht")
+        viimati_klickitud_programmi_koht=programmide_listbox.curselection()
     except:
+        print("m")
         pass
+    raam.after(300,programmide_listboxi_värskendus)
 
+def programmide_listboxi_värskendus():
+    programmide_listbox.delete(0,END)
+    print(processes)
+    for element in processes:
+        programmide_listbox.insert(END, element[0])
+    
 def radiobutton_job(saadud_list):     #teen progrgrammide loetelusse lisamise koha
     global programmide_jutt, programmide_listbox, after_id, prog_scrollbar, nupp, programmi_sisend
     arv=leia_arv()
@@ -474,6 +485,7 @@ kõikide_aegade_nullimise_nupp.grid(column=3, row=0, ipadx=ekraani_laius*0.1*0.7
 
 for i in range(20):
     emptylabel1=ttk.Label(raam,text=" ", background=tausta_värv).grid(column=0,row=i,padx=20, pady=5, sticky=(W))
+    emptylabel1=ttk.Label(raam, text="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", foreground=tausta_värv, background=tausta_värv).grid(column=2, row=i+1, padx=20, pady=5, sticky=(W))
 
         
 #teen stopperi:
@@ -510,10 +522,6 @@ nupp_eemalda.grid(row=8, column=5, padx=15, columnspan=2, sticky=(W))
 nupp_lisa=Radiobutton(raam, text="Lisa programme", value=2, variable=var, command=lambda: radiobutton_job([]), bg=tausta_värv)
 nupp_lisa.grid(row=8, column=4, padx=15, pady=2, sticky=(W))
 
-stopperi_näidatav_aeg3=ttk.Label(raam, text= "2 tundi, 30 minutit, 25 sekundit.")
-
-nulli=Button(raam, text="Nulli", command=nulli_stopper, width=8, bg=nupu_värv, font=headeri_font)
-nulli.grid(column=3, row=1, pady=5)
 
 LoadFile()
 update_processes()
