@@ -230,28 +230,29 @@ _________ _______ _________ _______  _______  _______         _______ _________ 
 def käivita_taimer():
     global lisaaken, tundide_sisestus_taimerisse, minutite_sisestus_taimerisse, sekundite_sisestus_taimerisse, teadaanne
     lisaaken=Tk()
+    lisaaken.configure(bg = tausta_värv)
     lisaaken.bind_all("<Return>", lisa_taimer)
     lisaaken.title("Taimeri loomine")
     lisaaken.geometry('%dx%d+%d+%d' % (300, 200, 0.45*ekraani_laius, 0.45*ekraani_kõrgus))  #määran asukoha andmetega
-    taimeri_header = ttk.Label(lisaaken, text="Sisestage aeg, pärast mida te soovite meeldetuletust:")
+    taimeri_header = ttk.Label(lisaaken, text="Sisestage aeg, pärast mida te soovite meeldetuletust:", background=tausta_värv)
     taimeri_header.grid(row=0, column=0, columnspan=7, padx=5, pady=10)
     tundide_sisestus_taimerisse = ttk.Entry(lisaaken, width=3)
     tundide_sisestus_taimerisse.grid(row=1, column=0, padx=5, pady=5, sticky=(W))
-    tundide_tekst = ttk.Label(lisaaken, text="tundi,")
+    tundide_tekst = ttk.Label(lisaaken, text="tundi,", background=tausta_värv)
     tundide_tekst.grid(row=1, column=1, padx=0, pady=5, sticky=(W,E))
-    minutite_sisestus_taimerisse = ttk.Entry(lisaaken, width=3)
+    minutite_sisestus_taimerisse = ttk.Entry(lisaaken, width=3, background=tausta_värv)
     minutite_sisestus_taimerisse.grid(row=1, column=2, padx=5, pady=10, sticky=(W))
-    minutite_tekst = ttk.Label(lisaaken, text="minutit,")
+    minutite_tekst = ttk.Label(lisaaken, text="minutit,", background=tausta_värv)
     minutite_tekst.grid(row=1, column=3, padx=0, pady=5, sticky=(W,E))
     sekundite_sisestus_taimerisse = ttk.Entry(lisaaken, width=3)
     sekundite_sisestus_taimerisse.grid(row=1, column=4, padx=5, pady=10, sticky=(W))
-    sekundite_tekst = ttk.Label(lisaaken, text="sekundit")
+    sekundite_tekst = ttk.Label(lisaaken, text="sekundit", background=tausta_värv)
     sekundite_tekst.grid(row=1, column=5, padx=0, pady=5, sticky=(W,E))
-    teksti_küsimine = ttk.Label(lisaaken, text="Sisestage meeldetuletuse sõnum: ")
+    teksti_küsimine = ttk.Label(lisaaken, text="Sisestage meeldetuletuse sõnum: ", background=tausta_värv)
     teksti_küsimine.grid(row=3, column=0, columnspan=7, padx=5, pady=5)
     teadaanne = ttk.Entry(lisaaken, width=40)
     teadaanne.grid(row=4, column=0, columnspan=7, padx=5, pady=5)
-    taimeri_lisamise_nupp = Button(lisaaken, text="Lisa taimer", command=lisa_taimer, width=12)
+    taimeri_lisamise_nupp = Button(lisaaken, text="Lisa taimer", command=lisa_taimer, width=12, background=nupu_värv)
     taimeri_lisamise_nupp.grid(column=2, columnspan=3, row=5, padx=5, pady=5, sticky=(W))
 
 def lisa_taimer(event=0):
@@ -332,14 +333,16 @@ viimati_klickitud_programmi_koht=0
 def hiireklõps(event=0):
     global töötavad_taimerid, viimati_klickitud_taimeri_koht, katselist, katse_olemasolev, viimati_klickitud_programmi_koht, programmide_listbox, after_id
     if taimeri_listbox.curselection()==viimati_klickitud_taimeri_koht:
-        taimeri_listbox.selection_clear(0,len(töötavad_taimerid)) # selleks, et highlightimine kohe kaoks
-        raam.after(300,taimeri_listboxi_lisamine,töötavad_taimerid)  #selleks, et ma saaksin taimeri listist asju eemaldada
+        if taimeri_listbox.get(ANCHOR)!="":
+            taimeri_listbox.selection_clear(0,len(töötavad_taimerid)) # selleks, et highlightimine kohe kaoks
+            raam.after(300,taimeri_listboxi_lisamine,töötavad_taimerid)  #selleks, et ma saaksin taimeri listist asju eemaldada
     viimati_klickitud_taimeri_koht=taimeri_listbox.curselection()
 
     try:            #juhuks kui programmide listoxi pole loodud
         if programmide_listbox.curselection()==viimati_klickitud_programmi_koht:
-            programmide_listbox.selection_clear(0, len(processes)) # selleks, et highlightimine kohe kaoks
-            raam.after(300, programmide_listboxi_värskendus)
+            if programmide_listbox.get(ANCHOR)!="":
+                programmide_listbox.selection_clear(0, len(processes)) # selleks, et highlightimine kohe kaoks
+                raam.after(300, programmide_listboxi_värskendus)
         viimati_klickitud_programmi_koht=programmide_listbox.curselection()
     except:
         pass
