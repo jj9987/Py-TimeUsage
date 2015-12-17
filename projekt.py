@@ -304,11 +304,13 @@ def jälgi_taimerit(aeg,sõnum):
 
 def eemalda_midagi_boxist(event=0):  
     global töötavad_taimerid
-    try:
-        sõnum = taimeri_listbox.get(ANCHOR)
+    sõnum = taimeri_listbox.get(ANCHOR)
+    if len(sõnum)>0:
         eemalda_taimer()
-    except:
-        eemalda_programm(programmide_listbox.get(ANCHOR))
+    sõnum=programmide_listbox.get(ANCHOR)
+    if len(sõnum)<0:
+        print("a")
+        eemalda_programm(sõnum)
 
 def eemalda_taimer():
     global töötavad_taimerid
@@ -409,26 +411,12 @@ def lisa_programm(event=0):
     try:     #juhuks kui keei vajutab enterit lambisel hetkel
         nimi=programmi_sisend.get()
         if len(nimi)>0:
-            processes.append([nimi,0])
+            processes.append([nimi,0,"Ei tööta"])
             programmi_sisend.delete(0,END)
             Delete_Old_Table_Data()
     except:
         pass
-        
-<<<<<<< HEAD
-
-=======
-def lisa_programm(nimi):
-    processes.append([nimi,0,"Ei tööta"])
-    programmi_sisend.delete(0,END)
-    Delete_Old_Table_Data()
     
-#def lisa_programm(nimi):
-#    processes.append([nimi,0])
-#    programmi_sisend.delete(0,END)
-#    Delete_Old_Table_Data()
-    
->>>>>>> origin/master
 def eemalda_programm(nimi):
     for item in processes:
         if item[0] == nimi:
@@ -483,6 +471,10 @@ aja_header.grid(column=2, row=0, ipadx=ekraani_laius*0.09*0.7-66, pady=20, stick
 kõikide_aegade_nullimise_nupp = Button(raam, text="Nulli ajad", command=nulli_kõik, width=6, font=headeri_font, bg=nupu_värv)
 kõikide_aegade_nullimise_nupp.grid(column=3, row=0, ipadx=ekraani_laius*0.1*0.7-70, padx=15, pady=20, sticky=(W))
 
+for i in range(20):
+    emptylabel1=ttk.Label(raam,text=" ", background=tausta_värv).grid(column=0,row=i,padx=20, pady=5, sticky=(W))
+
+        
 #teen stopperi:
 stopper=ttk.Label(raam, text="Stopper:", font=headeri_font, background=tausta_värv)
 stopper.grid(column=4, row=1, ipadx=ekraani_laius*0.01, pady=5, padx=15, sticky=(W))
