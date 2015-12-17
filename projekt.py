@@ -423,6 +423,7 @@ def eemalda_programm(nimi):
             processes.remove(item)
             Delete_Old_Table_Data()
             break
+    programmide_listbox.delete(ANCHOR)
 
 
     
