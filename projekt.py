@@ -1,3 +1,15 @@
+"""
+Rakendus, millega saab jälgida rakenduste kasutamisaega.
+
+Vead: 
+* Olenevalt arvutist ja rakenduste arvust - Sekund =/= Sekund
+* CPU usage on umbes 20%
+* Jookseb aeg-ajalt kokku
+
+Planeeritud:
+* Täielikult uuesti teha rakenduste kontroll.
+"""
+
 try: #Python 3
     from tkinter import *
     from tkinter import ttk, font
